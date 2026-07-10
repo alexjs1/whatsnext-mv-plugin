@@ -1,0 +1,5 @@
+.DS_Store
+node_modules/
+*.log
+# Never commit secrets. The Google key lives in the app's own .env, not here.
+.env

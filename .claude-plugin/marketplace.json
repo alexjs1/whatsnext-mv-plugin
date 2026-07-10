@@ -1,0 +1,13 @@
+{
+  "name": "whatsnext-marketplace",
+  "owner": {
+    "name": "Alex Salop"
+  },
+  "plugins": [
+    {
+      "name": "whatsnext",
+      "source": ".",
+      "description": "Maintenance skills for the What's Next MV visitor-guide app."
+    }
+  ]
+}
