@@ -1,6 +1,6 @@
 ---
 name: add-place
-description: Add a place (restaurant, beach, lodging, market, landmark, trail, shop, etc.) to the What's Next MV guide. Use whenever the user types /whatsnext:add-place or asks to "add <place> to the guide", "put <business> on the map", "the guide is missing <place>", "add this restaurant/beach/hotel/market", or gives a name and (optionally) a URL to include. Verifies the facts against real sources, geocodes the location, writes a schema-correct data record in the right file and category (building a new category end-to-end if needed), then publishes.
+description: Add a place (restaurant, beach, lodging, market, landmark, trail, shop, etc.) to the What's Next MV guide. Use whenever the user types /whatsnext:add-place or asks to "add a place to the guide", "put a business on the map", "the guide is missing a spot", "add this restaurant/beach/hotel/market", or gives a name and (optionally) a URL to include. Verifies the facts against real sources, geocodes the location, writes a schema-correct data record in the right file and category (building a new category end-to-end if needed), then publishes.
 ---
 
 # Add a place to the guide

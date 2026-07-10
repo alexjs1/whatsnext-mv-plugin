@@ -1,6 +1,6 @@
 ---
 name: add-event
-description: Add an event to the What's Next MV events calendar. Use whenever the user types /whatsnext:add-event or asks to "add <event> to the calendar", "put the <fair/festival/parade/fireworks> in the guide", "the guide is missing <event>", or gives an event name and (optionally) a URL. Verifies this year's date, time, and location against real sources, inserts it chronologically into events.ts, then publishes.
+description: Add an event to the What's Next MV events calendar. Use whenever the user types /whatsnext:add-event or asks to "add an event to the calendar", "put the fair or festival in the guide", "the guide is missing an event", add a parade, fireworks, or road race, or gives an event name and (optionally) a URL. Verifies this year's date, time, and location against real sources, inserts it chronologically into events.ts, then publishes.
 ---
 
 # Add an event to the calendar
