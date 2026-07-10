@@ -1,13 +1,18 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "whatsnext-marketplace",
+  "description": "Maintenance skills for the What's Next MV visitor-guide app.",
   "owner": {
     "name": "Alex Salop"
   },
   "plugins": [
     {
       "name": "whatsnext",
-      "source": ".",
-      "description": "Maintenance skills for the What's Next MV visitor-guide app."
+      "source": "./plugins/whatsnext",
+      "description": "Maintenance skills for the What's Next MV visitor-guide app: add places and events, refresh ratings, audit descriptions, feature places, and publish.",
+      "author": {
+        "name": "Alex Salop"
+      }
     }
   ]
 }
