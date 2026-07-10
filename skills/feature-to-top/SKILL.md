@@ -1,0 +1,35 @@
+---
+name: feature-to-top
+description: Make a place show first in its category in the What's Next MV guide (a featured-listing perk). Use whenever the user types /whatsnext:feature-to-top or asks to "bring a place to the top", "feature it first", "make it show first", "give it top ranking", "prioritize it in results", or the reverse ("stop featuring it at the top", "remove top ranking"). Sets or clears the place's priority flag, then publishes.
+---
+
+# Feature a place to the top of results
+
+Sets the `priority` flag on a place. A priority place sorts **first within its category** in the Guide and leads the concierge's answers for that category, and it shows a gold "Featured" tag on the row, card, and detail page.
+
+## Project root
+
+```
+$HOME/Documents/mv-guide
+```
+
+The app already implements the behavior (priority-first sorting + the Featured tag). This skill just toggles the flag on the place record.
+
+## Step 1 — Find the place
+
+```
+grep -rn "name: '<place name>'" "$HOME/Documents/mv-guide/src/data/"
+```
+
+## Step 2 — Toggle the flag
+
+- **To feature:** add `priority: true,` to the record (a good spot is right after the `id/name/category` line). If the line already has other flags like `starMarker: true`, add alongside them.
+- **To un-feature:** remove the `priority: true` from the record (or the user may want the whole featured package removed — see `/whatsnext:feature-place`).
+
+Keep TS-string rules in mind for any nearby edits (curly apostrophes; never `String.replace` with a `$`).
+
+## Step 3 — Publish
+
+Run `/whatsnext:publish`. In the preview, open the Guide, filter to the place's category, and confirm it now leads the list with the gold "Featured" tag (and, for a removal, that it's back in rating order with no tag).
+
+> Note: "first" means first **within its category** (a featured restaurant leads the restaurant list, not the whole guide). The gold map star is a separate perk — see `/whatsnext:feature-star`.

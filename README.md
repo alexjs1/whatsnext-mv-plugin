@@ -19,6 +19,10 @@ Invoke any skill as `/whatsnext:<skill>`.
 | `/whatsnext:audit-descriptions` | Accuracy sweep of place descriptions against real sources. |
 | `/whatsnext:concierge-check` | Find gaps in the offline concierge's coverage. |
 | `/whatsnext:seasonal-refresh` | Roll event dates to the new year; re-check seasonal windows. |
+| `/whatsnext:feature-place` | Feature a business (top ranking + gold map star + custom description). |
+| `/whatsnext:feature-to-top` | Just the top-of-category ranking + "Featured" tag. |
+| `/whatsnext:feature-star` | Just the gold star on the map. |
+| `/whatsnext:customize-description` | Just a custom description (≤250 chars). |
 | `/whatsnext:publish` | The shared tail: typecheck, export, verify, commit, push. |
 
 ## Install

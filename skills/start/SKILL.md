@@ -26,6 +26,10 @@ Repo `alexjs1/whats-next-mv`, branch `main` → auto-deploys to whatsnextmv.netl
 | `/whatsnext:audit-descriptions` | Accuracy sweep of descriptions vs. real sources |
 | `/whatsnext:concierge-check` | Find gaps in the offline concierge's coverage |
 | `/whatsnext:seasonal-refresh` | Roll event dates to the new year; re-check seasonal windows |
+| `/whatsnext:feature-place` | Feature a business: top ranking + gold map star + custom description |
+| `/whatsnext:feature-to-top` | Just the top-of-category ranking + "Featured" tag |
+| `/whatsnext:feature-star` | Just the gold star on the map |
+| `/whatsnext:customize-description` | Just a custom description (≤250 chars) |
 | `/whatsnext:publish` | Typecheck, export, verify, commit, push |
 
 The default weekly action is `/whatsnext:weekly-refresh`. If uncommitted work or a stale `ratings.ts` is sitting around, or it's been about a week, suggest it.
