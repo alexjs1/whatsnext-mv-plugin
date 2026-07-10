@@ -19,13 +19,16 @@ Repo `alexjs1/whats-next-mv`, branch `main` → auto-deploys to whatsnextmv.netl
 
 | Skill | What it does |
 |---|---|
+| `/whatsnext:weekly-refresh` | The weekly cycle: sweep for new/closed/changed places + events, refresh ratings, publish |
 | `/whatsnext:add-place` | Add a place: verify, geocode, write the record, publish |
 | `/whatsnext:add-event` | Add an event to the calendar |
-| `/whatsnext:refresh-ratings` | Weekly Google-ratings refresh |
+| `/whatsnext:refresh-ratings` | Google-ratings-only refresh (the mechanical part of the weekly cycle) |
 | `/whatsnext:audit-descriptions` | Accuracy sweep of descriptions vs. real sources |
 | `/whatsnext:concierge-check` | Find gaps in the offline concierge's coverage |
 | `/whatsnext:seasonal-refresh` | Roll event dates to the new year; re-check seasonal windows |
 | `/whatsnext:publish` | Typecheck, export, verify, commit, push |
+
+The default weekly action is `/whatsnext:weekly-refresh`. If uncommitted work or a stale `ratings.ts` is sitting around, or it's been about a week, suggest it.
 
 ## Step 1 — Inspect state
 

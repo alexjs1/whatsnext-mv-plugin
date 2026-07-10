@@ -12,9 +12,10 @@ Invoke any skill as `/whatsnext:<skill>`.
 | Skill | Purpose |
 |---|---|
 | `/whatsnext:start` | Front door. Reports guide state and routes to the right skill. |
+| `/whatsnext:weekly-refresh` | The weekly cycle: new/closed/changed places + events, ratings, publish. |
 | `/whatsnext:add-place` | Add a place: verify, geocode, write the record, publish. |
 | `/whatsnext:add-event` | Add an event to the calendar. |
-| `/whatsnext:refresh-ratings` | Weekly Google-ratings refresh. |
+| `/whatsnext:refresh-ratings` | Google-ratings-only refresh. |
 | `/whatsnext:audit-descriptions` | Accuracy sweep of place descriptions against real sources. |
 | `/whatsnext:concierge-check` | Find gaps in the offline concierge's coverage. |
 | `/whatsnext:seasonal-refresh` | Roll event dates to the new year; re-check seasonal windows. |

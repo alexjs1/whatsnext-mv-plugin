@@ -1,6 +1,6 @@
 {
   "name": "whatsnext",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Maintenance skills for the What's Next MV visitor-guide app (Expo/React Native, repo alexjs1/whats-next-mv): add places and events, refresh Google ratings, audit descriptions for accuracy, check concierge coverage, roll seasonal dates, and publish (typecheck, export, verify, commit, push).",
   "author": {
     "name": "Alex Salop"
