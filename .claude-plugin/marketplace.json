@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "whatsnext-marketplace",
+  "name": "whatsnext-mv",
   "description": "Maintenance skills for the What's Next MV visitor-guide app.",
   "owner": {
     "name": "Alex Salop"
