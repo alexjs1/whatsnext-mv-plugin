@@ -29,7 +29,7 @@ Invoke any skill as `/whatsnext:<skill>`.
 
 This repo is its own single-plugin marketplace (`.claude-plugin/marketplace.json`).
 
-- **Claude Code:** `/plugin marketplace add alexjs1/whatsnext-plugin` then `/plugin install whatsnext@whatsnext-marketplace`.
+- **Claude Code:** `/plugin marketplace add alexjs1/whatsnext-mv-plugin` then `/plugin install whatsnext@whatsnext-mv`.
 - **Cowork (desktop):** enable it from Customize → Workspace, the same way the `toybox` plugin was installed.
 
 ## Conventions every skill follows
