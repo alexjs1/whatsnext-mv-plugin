@@ -41,17 +41,35 @@ Repo `alexjs1/whats-next-mv`, branch `main`. Pushing to `main` triggers the Netl
    - Check `preview_console_logs` (level error) is clean.
    - Capture one screenshot or text snippet as proof.
 
-5. **Commit** with a clear message and the standard trailer:
+5. **Update the living docs — automatic, not on request.** If this change is
+   anything more than a pure content tweak (a new or changed feature, data
+   model, concierge intent, category, convention, command, or gotcha), reflect
+   it in the docs **in this same commit**. The user should never have to ask a
+   session to do this.
+   - `DEVELOPMENT.md` (tracked) — the technical handbook: architecture,
+     concierge design, chip taxonomy, data provenance & refresh recipes,
+     editorial conventions, mistakes-not-to-repeat. Amend the relevant section.
+   - `APP_OVERVIEW.md` (tracked) — the plain-language overview for a
+     slightly-technical reader. Keep it in sync at a high level (what the app
+     now does, and the stack table if the stack changed).
+   Other sessions edit these too, so make **targeted additions to the right
+   section, never a blind overwrite**. A pure content edit (one place's hours,
+   the weekly ratings refresh) needs no doc change — use judgment.
+
+6. **Commit** with a clear message and the standard trailer:
    ```
-   git add -A && git commit -m "<subject>
+   git commit -m "<subject>
 
    <what changed and why>
 
    Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
    ```
-   If the working tree has unrelated in-progress files (design docs, an audit spreadsheet), stage only the files this change touches rather than `-A`.
+   Stage the files this change touches (the code/data edits **plus** any
+   `DEVELOPMENT.md` / `APP_OVERVIEW.md` updates from step 5). Prefer explicit
+   `git add <paths>` over a blind `git add -A` so unrelated in-progress files
+   (see guardrails) don't get swept in.
 
-6. **Push:**
+7. **Push:**
    ```
    git push origin main
    ```
@@ -59,5 +77,6 @@ Repo `alexjs1/whats-next-mv`, branch `main`. Pushing to `main` triggers the Netl
 
 ## Guardrails
 
-- Local working docs (`TRIP_PLANNER.md`, `APP_OVERVIEW.md`, `description-audit.xlsx`) are intentionally untracked / gitignored. Don't sweep them in with a blind `git add -A`.
+- `DEVELOPMENT.md` and `APP_OVERVIEW.md` are **living, tracked docs** — keep them current per step 5, never leave them stale.
+- Genuinely local working files (`TRIP_PLANNER.md`, `description-audit.xlsx`) are intentionally untracked. Don't sweep them in with a blind `git add -A`.
 - If typecheck or the preview surfaces a real problem, fix it and re-run from step 2. Report failures honestly rather than pushing around them.
