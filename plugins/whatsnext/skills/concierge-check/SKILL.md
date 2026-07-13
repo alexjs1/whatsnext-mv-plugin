@@ -20,7 +20,7 @@ $HOME/Documents/mv-guide
 
 ## Step 0 — Run the regression battery (do this first, every time)
 
-`scripts/concierge-battery.json` holds ~63 `{q, expect, notExpect}` cases (a question with a substring its answer must/must-not contain). Run it against the REAL router via the dev-only `window.__askLocal` hook:
+`scripts/concierge-battery.json` holds ~91 `{q, expect, notExpect}` cases (grown with every new category — shops, charters, sweets landed July 2026) (a question with a substring its answer must/must-not contain). Run it against the REAL router via the dev-only `window.__askLocal` hook:
 
 1. `preview_start` (`vineyard-guide-web`, 8081), wait for the bundle, then navigate to `http://localhost:8081` so `__DEV__` is set and the hook is installed. Confirm `typeof window.__askLocal === 'function'`.
 2. In one `javascript_tool` call, `fetch('/concierge-battery.json')` won't work (scripts/ isn't web-served) — instead read the JSON with the Read tool, inline its `cases` into the browser script, and for each call `window.__askLocal(q)` and assert `expect` is present and `notExpect` (if set) is absent, case-insensitive. Return the list of failures.
