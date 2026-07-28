@@ -5,14 +5,12 @@ description: Build a curated "Pocket Concierge" front door for a private-label h
 
 # Build a hotel's Pocket Concierge
 
-A **Pocket Concierge** is a curated front-door menu for a private-label hotel edition. After the (longer) branded splash, instead of the generic intent/town wizard the guest sees a hand-picked menu:
+A **Pocket Concierge** is a curated front door for a private-label hotel edition, shown after the (longer) branded splash instead of the generic intent/town wizard. It has two views, kept deliberately simple:
 
-- **What to do nearby** — dining grouped by meal (breakfast / lunch / dinner), each pick tagged with its price tier and Google rating, and a "short trip out" flag for anything not walkable; plus shopping and landmarks.
-- **Can't-miss Vineyard activities** — a curated island-wide list.
-- **African American Heritage Trail** — a short summary, the local (in-town) stops pulled live from the trail data, and a link to the official site.
-- **Or, ask** — a text box that routes the guest's question to the AI concierge.
+- **Menu** — a lean launcher: the title ("<hotel> recommendations around town"), one button per section, then an "or ask" box that routes to the AI concierge. Sections: **Local restaurants we love**, **Where to shop in town**, **Must-see \<town\> landmarks**, **African American Heritage Trail**, **Can't-miss Vineyard activities** (the hotel words its own button labels via `labels`).
+- **Panel** — tapping a button opens the picks as **collapsible accordions** (the tapped section opens first, the rest stay closed so it's never a wall of text), with a "‹ Menu" control back to the launcher. Dining groups by meal (price tier, Google rating, a "short trip out" flag for anything not walkable); the heritage accordion shows a summary, the in-town stops pulled live from the trail data, and a link to the official site.
 
-Every pick is a real guide place, so a tap opens its detail card, and the whole thing is **data-driven per hotel**: you fill in one config block, no component code. The base app has no config, so it is untouched. Analytics tag this traffic as `edition = pl:<slug>`.
+Every pick is a real guide place, so a tap opens its detail card. A hotel can give any pick its **own words** (`desc`), which override the guide's description in this view. It is **data-driven per hotel**: you fill in one config block, no component code. The base app has no config, so it is untouched. Analytics tag this traffic as `edition = pl:<slug>`.
 
 ## Prerequisite
 
@@ -41,19 +39,30 @@ $HOME/Documents/mv-guide
 ```ts
 pocketConcierge: {
   splashMs: 5000,                 // longer splash for the curated edition (base app stays 4000)
-  intro: '…',                     // one line under the welcome
-  askPlaceholder: '…',            // ask-box placeholder
+  menuTitle: '…',                 // optional; default "<shortName> recommendations around town"
+  labels: {                       // optional per-section button wording
+    restaurants: 'Local restaurants we love',
+    shopping: 'Where to shop in town',
+    landmarks: 'Must-see Oak Bluffs landmarks',
+    heritage: 'African American Heritage Trail',
+    cantMiss: 'Can’t-miss Vineyard activities',
+  },
+  intro: '…',                     // one line under the title
   dining: [                       // meal-first; repeats across meals are fine
-    { meal: 'Breakfast', picks: [ { id, tier: '$'|'$$'|'$$$', note?, walkOut? }, … ] },
+    { meal: 'Breakfast', picks: [ { id, tier: '$'|'$$'|'$$$', note?, walkOut?, desc? }, … ] },
     { meal: 'Lunch',     picks: [ … ] },
     { meal: 'Dinner',    picks: [ … ] },
   ],
-  shopping:  [ { id, note? }, … ],
-  landmarks: [ { id, note? }, … ],
+  shopping:  [ { id, note?, desc? }, … ],
+  landmarks: [ { id, note?, desc? }, … ],
   cantMiss:  [ { id?, title, blurb?, season? }, … ],   // id optional → text-only, non-tappable
   heritageIntro: '…',             // your own summary; the stops + link are automatic
+  askCta: '…',                    // the "or ask" line above the concierge box
+  askPlaceholder: '…',            // ask-box placeholder
 }
 ```
+
+`desc` on any dining/shopping/landmark pick is the **hotel's own words** for that place — it overrides the guide's description in the panel. Use it where the property wants to say something the guide doesn't (a favorite dish, "ask for a table by the window"). Leave it off to fall back to the guide copy.
 
 ## Step 1 — Anchor the hotel in its town
 
