@@ -119,7 +119,25 @@ Start the preview (`/whatsnext:start` if not running) and open `/h/<slug>`:
 
 Then `npx tsc --noEmit`.
 
-## Step 6 — Publish
+## Step 6 — Make it installable as the hotel
+
+So a guest who saves it to their home screen gets the HOTEL's name and icon (not
+"What's Next MV"), give the edition its own install manifest:
+
+1. Add a row for the hotel in `PARTNERS` at the top of `scripts/make-pwa-icons.mjs`
+   (`{ slug, logo: 'assets/images/partners/<slug>-logo.png', bg: '<brand headerBg>' }`),
+   then run `node scripts/make-pwa-icons.mjs`. It writes `public/icons/<slug>-192.png`
+   and `-512.png` (the logo padded on the brand color so Android's circular mask
+   doesn't clip it).
+2. Copy `public/manifest-saltwind.webmanifest` to `public/manifest-<slug>.webmanifest`
+   and set `name`, `short_name`, `description`, `start_url` (`/h/<slug>`),
+   `background_color`, `theme_color`, and the two icon paths.
+
+Keep partner manifests at the ROOT of `public/`, never under `public/h/` — the
+`/h/* → /index.html` rewrite in `netlify.toml` would shadow them. `ensureInstallable()`
+picks the file up automatically from the active partner's slug; no code change.
+
+## Step 7 — Publish
 
 Run `/whatsnext:publish`. Commit message names the hotel, e.g. "Add Pocket Concierge for The Saltwind Inn".
 
