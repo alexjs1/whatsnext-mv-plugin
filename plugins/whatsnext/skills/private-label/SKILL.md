@@ -46,6 +46,15 @@ Each section carries one content **shape** (`PocketSectionBody` in `src/data/par
 
 **Accordions wherever the content allows.** Phones read them far better than long pages, and `prose` chapters plus `places` groups both collapse by default.
 
+### A visitor must always be able to get back to the menu
+
+The curated menu is the front door, and someone three taps deep in the Guide or on a place page has no obvious way home unless you give them one. So, in every edition:
+
+- The partner's **mark sits at the top of the menu** and at the **top right of every other screen**, and both open the SAME actions — call, website, email, the partner's `contact.links`, and add-to-home-screen. They render from one component, `src/components/PartnerContactActions.tsx`; do not hand-roll a second button list, which is exactly how the two drifted apart before.
+- Those actions lead with **"Back to the \<shortName\> menu"** on every surface except the menu itself, where it would do nothing. It works from a place page too (the header steps back to a tab first, then the gate reopens the concierge).
+
+Treat "can I get to the menu from here?" as part of Step 3's verification, not a nicety.
+
 An edition written before `sections` existed (the Saltwind demo) still uses the legacy `dining` / `shopping` / `landmarks` / `cantMiss` fields; those are folded into the same renderer and keep working untouched.
 
 ## Every edition gets its own web address
@@ -131,7 +140,7 @@ In the dev preview use **`/?partner=<slug>`** (`/h/<slug>` is written at build t
 - a place row opens a place page with Directions + Call, and **Back returns to the list you were reading**, not the map;
 - **lodging** is gone for a hotel edition ("where should I stay" returns nothing) and **present** for an association — compare the map's place count against the base app's; they should differ only if the cull is on;
 - the second tab is labelled and worded for this partner, not "Favorites … places we love";
-- the logo in the header offers **"Back to the \<shortName\> Guide"** above the contact actions;
+- the mark at the top of the MENU and the one at the top RIGHT of every other screen open the same actions, and every surface except the menu leads with **"Back to the \<shortName\> menu"** — test it from a place page, which is the case that used to strand people;
 - the **Saltwind demo still works** (`/?partner=saltwind`) — it exercises the legacy menu path;
 - open **`/?partner=none`** and confirm the base app is unchanged (no second tab, lodging back, "Ask our AI Concierge"). A plain `/` will NOT do: the active edition deliberately sticks for the browsing session.
 
