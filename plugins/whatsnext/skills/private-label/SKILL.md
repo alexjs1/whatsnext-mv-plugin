@@ -43,11 +43,16 @@ Each section carries one content **shape** (`PocketSectionBody` in `src/data/par
 | `info` | The partner's `infoSections` |
 | `heritage` | The African American Heritage Trail card |
 | `walks` | Self-guided walking tours: named walks, each an accordion of numbered stops, with a "walk this route" link and per-stop Directions |
+| `install` | "Download the app" — the written home-screen steps for both platforms, always shown |
 | `comingSoon` | Announced but not built — renders one note |
 
 **Walking tours, if a partner has one.** The Google Maps links deliberately omit an origin, so Maps routes from the visitor's CURRENT location rather than assuming they are at stop 1 — that is the difference between a tour that works and one that only works if you start at the top. A stop's `lat`/`lng` are optional and **must be left unset unless you confirmed them**: the stop still renders its text, it just gets no Directions link and drops out of the route. Walking-tour stops are frequently private homes, and a guessed pin sends a stranger to someone's front door.
 
 Resolve coordinates with a script that writes a review file and never edits data (`scripts/geocode-walking-tour.mjs` is the working example), then read the file. Two things it learned the hard way: the Cloud project has **Geocoding disabled** and Places enabled, and Places is the better tool anyway because it echoes back the address it matched — assert the house number and street came back as asked instead of trusting a confidence grade. Named landmarks, intersections and anything that first resolves to a street or park centroid should be re-queried **by name**, which is how four Oak Bluffs stops were rescued from the wrong pin.
+
+**Give every edition an `install` section.** The contact sheet also offers add-to-home-screen, but it hides the written steps behind a single button whenever the browser offers a native prompt — so a visitor looking for "how do I download this" can find nothing at all. A menu item named for the job is the fix.
+
+**Section blurbs are optional and usually not worth it.** A `blurb` under each label reads well with three or four sections and pushes an eight-item menu off the screen. Dropping them also stops long labels wrapping. Prefer a label that stands on its own.
 
 **Accordions wherever the content allows.** Phones read them far better than long pages, and `prose` chapters plus `places` groups both collapse by default.
 
