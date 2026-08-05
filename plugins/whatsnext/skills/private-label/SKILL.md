@@ -52,6 +52,8 @@ Resolve coordinates with a script that writes a review file and never edits data
 
 **Give every edition an `install` section.** The contact sheet also offers add-to-home-screen, but it hides the written steps behind a single button whenever the browser offers a native prompt — so a visitor looking for "how do I download this" can find nothing at all. A menu item named for the job is the fix.
 
+**Never start `askCta` with "Or".** The menu draws a hard-coded "or" divider directly above it, so a CTA opening with "Or" prints the word twice. Write it as a bare instruction — "Ask any question about the town or MV", not "Or ask us anything".
+
 **Menu real estate is the scarce resource.** Every row competes with the ask box below it. Before adding a section, check whether it belongs *inside* an existing one — the Heritage Trail ended up nested in the walking tours for exactly this reason. `emphasis: 'filled'` draws one row as a solid button so a utility item reads as different in kind; use it once, or it stops meaning anything.
 
 **Section blurbs are optional and usually not worth it.** A `blurb` under each label reads well with three or four sections and pushes an eight-item menu off the screen. Dropping them also stops long labels wrapping. Prefer a label that stands on its own.
@@ -131,7 +133,7 @@ Ask the user for (offer to proceed with sensible placeholders for anything they 
 - **Real, signed partner** → append to `PARTNERS` in `src/data/partners.ts`. Use their REAL contact details; never seed a live partner with 555 placeholders.
 - **Demo / sales sample** → add to `DEMO_PARTNERS` in the same file (use the `saltwind` entry as the template) and set `demo: true`. Demos DO deploy but are reachable only at their `/h/<slug>` deep link; keep contact details obviously fake (555 number, example.com) so a sample can't be mistaken for a real business.
 
-Match the `Partner` interface in `src/data/partners.ts` exactly (it is fully commented). Optional `favoritesLabel` renames the Favorites tab (e.g. "SW Favorites"); `conciergeLabel` is the splash subtitle; `shortName` drives the "Ask your … Pocket Concierge" prompt.
+Match the `Partner` interface in `src/data/partners.ts` exactly (it is fully commented). Optional `favoritesLabel` renames the Favorites tab (e.g. "SW Favorites"); `conciergeLabel` is the splash subtitle (the menu card does NOT repeat it — the splash has just said it, and the line costs a row); `shortName` drives the "Ask your … Pocket Concierge" prompt.
 
 Then two assets, both needed before the edition's own site goes up:
 
