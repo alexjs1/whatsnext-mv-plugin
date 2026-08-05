@@ -42,7 +42,7 @@ Each section carries one content **shape** (`PocketSectionBody` in `src/data/par
 | `events` | `eventIds` from the guide's own EVENTS (dates stay current with the seasonal refresh) plus the partner's own `items` |
 | `info` | The partner's `infoSections` |
 | `heritage` | The African American Heritage Trail card |
-| `walks` | Self-guided walking tours: named walks, each an accordion of numbered stops, with a "walk this route" link and per-stop Directions |
+| `walks` | Self-guided walking tours: named walks, each an accordion of numbered stops, with a "walk this route" link and per-stop Directions. `heritage: true` carries the Heritage Trail card as a final nested entry — it is a walking tour, so it belongs here rather than costing its own menu row |
 | `install` | "Download the app" — the written home-screen steps for both platforms, always shown |
 | `comingSoon` | Announced but not built — renders one note |
 
@@ -51,6 +51,8 @@ Each section carries one content **shape** (`PocketSectionBody` in `src/data/par
 Resolve coordinates with a script that writes a review file and never edits data (`scripts/geocode-walking-tour.mjs` is the working example), then read the file. Two things it learned the hard way: the Cloud project has **Geocoding disabled** and Places enabled, and Places is the better tool anyway because it echoes back the address it matched — assert the house number and street came back as asked instead of trusting a confidence grade. Named landmarks, intersections and anything that first resolves to a street or park centroid should be re-queried **by name**, which is how four Oak Bluffs stops were rescued from the wrong pin.
 
 **Give every edition an `install` section.** The contact sheet also offers add-to-home-screen, but it hides the written steps behind a single button whenever the browser offers a native prompt — so a visitor looking for "how do I download this" can find nothing at all. A menu item named for the job is the fix.
+
+**Menu real estate is the scarce resource.** Every row competes with the ask box below it. Before adding a section, check whether it belongs *inside* an existing one — the Heritage Trail ended up nested in the walking tours for exactly this reason. `emphasis: 'filled'` draws one row as a solid button so a utility item reads as different in kind; use it once, or it stops meaning anything.
 
 **Section blurbs are optional and usually not worth it.** A `blurb` under each label reads well with three or four sections and pushes an eight-item menu off the screen. Dropping them also stops long labels wrapping. Prefer a label that stands on its own.
 
