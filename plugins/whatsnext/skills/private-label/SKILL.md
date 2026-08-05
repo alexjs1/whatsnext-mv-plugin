@@ -42,7 +42,12 @@ Each section carries one content **shape** (`PocketSectionBody` in `src/data/par
 | `events` | `eventIds` from the guide's own EVENTS (dates stay current with the seasonal refresh) plus the partner's own `items` |
 | `info` | The partner's `infoSections` |
 | `heritage` | The African American Heritage Trail card |
+| `walks` | Self-guided walking tours: named walks, each an accordion of numbered stops, with a "walk this route" link and per-stop Directions |
 | `comingSoon` | Announced but not built — renders one note |
+
+**Walking tours, if a partner has one.** The Google Maps links deliberately omit an origin, so Maps routes from the visitor's CURRENT location rather than assuming they are at stop 1 — that is the difference between a tour that works and one that only works if you start at the top. A stop's `lat`/`lng` are optional and **must be left unset unless you confirmed them**: the stop still renders its text, it just gets no Directions link and drops out of the route. Walking-tour stops are frequently private homes, and a guessed pin sends a stranger to someone's front door.
+
+Resolve coordinates with a script that writes a review file and never edits data (`scripts/geocode-walking-tour.mjs` is the working example), then read the file. Two things it learned the hard way: the Cloud project has **Geocoding disabled** and Places enabled, and Places is the better tool anyway because it echoes back the address it matched — assert the house number and street came back as asked instead of trusting a confidence grade. Named landmarks, intersections and anything that first resolves to a street or park centroid should be re-queried **by name**, which is how four Oak Bluffs stops were rescued from the wrong pin.
 
 **Accordions wherever the content allows.** Phones read them far better than long pages, and `prose` chapters plus `places` groups both collapse by default.
 
