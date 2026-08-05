@@ -52,6 +52,8 @@ Resolve coordinates with a script that writes a review file and never edits data
 
 **Give every edition an `install` section.** The contact sheet also offers add-to-home-screen, but it hides the written steps behind a single button whenever the browser offers a native prompt — so a visitor looking for "how do I download this" can find nothing at all. A menu item named for the job is the fix.
 
+**Ask about installing ONCE.** Editions have two install surfaces: the `install` menu section (permanent, on demand) and the `AddToHomeScreen` banner (a timed nudge on the map). The banner must be genuinely once-per-device — record it as seen when it is SHOWN, not when it is dismissed, or a visitor who ignores it gets it again on every trip back to the map. More than one reminder reads as nagging.
+
 **Never start `askCta` with "Or".** The menu draws a hard-coded "or" divider directly above it, so a CTA opening with "Or" prints the word twice. Write it as a bare instruction — "Ask any question about the town or MV", not "Or ask us anything".
 
 **Menu real estate is the scarce resource.** Every row competes with the ask box below it. Before adding a section, check whether it belongs *inside* an existing one — the Heritage Trail ended up nested in the walking tours for exactly this reason. `emphasis: 'filled'` draws one row as a solid button so a utility item reads as different in kind; use it once, or it stops meaning anything.
