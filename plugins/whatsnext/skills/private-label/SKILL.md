@@ -37,7 +37,7 @@ Each section carries one content **shape** (`PocketSectionBody` in `src/data/par
 | `kind` | For |
 |---|---|
 | `prose` | Long-form copy, split into `chapters` — each its own nested accordion, so a history reads as a contents list rather than a wall of text |
-| `places` | Guide places in named groups (by meal, by category, by street) |
+| `places` | Guide places in named groups (by meal, by category, by street). Set `collapsibleGroups` when there are more than a handful — each heading becomes its own accordion with a count, and a long directory collapses to one screen |
 | `activities` | Things to do, whether or not they map to a guide place |
 | `events` | `eventIds` from the guide's own EVENTS (dates stay current with the seasonal refresh) plus the partner's own `items` |
 | `info` | The partner's `infoSections` |
@@ -99,7 +99,7 @@ Ask the user for (offer to proceed with sensible placeholders for anything they 
    - **A mark taller than it is wide** needs `logoPortrait: true`, or it shrinks to a stripe in the splash, header and menu boxes, all of which are sized for a landscape wordmark.
 3. **Colors** — header/background, primary (buttons, links, active tab), accent (splash highlight), plus a color per menu section. Pull them from the partner's own site rather than eyedropping a screenshot: a Squarespace site exposes `--accent-hsl` / `--darkAccent-hsl` / `--lightAccent-hsl` in its `site.css`, and most site builders expose something equivalent. **Show the user the palette and type before building.**
 4. **Font** — a web font family + its stylesheet URL (Google Fonts is fine). Sets `fontHeadingWeb` + `webFontLink`. If their face is licensed (Adobe Fonts, a foundry), pick the closest free equivalent and say so — **Jost** is already bundled and is the app's Futura stand-in, so it costs nothing and works on native too. Any other native face must be bundled in `useFonts` (`src/app/_layout.tsx`); wire `fontHeadingNative` but note it's inactive until a native build adds it.
-5. **Contact** — phone, website, email, address, and what the phone reaches (`deskLabel`).
+5. **Contact** — phone, website, email, address, and what the phone reaches (`deskLabel`). Anything else they want one tap from every screen — a membership application, a booking page — goes in `contact.links` as `{ label, url }`.
 6. **The menu** — which sections, in what order, in whose words. See "The custom menu is the partner's" above. This is the bulk of the work; write real content, not placeholders, and use `comingSoon` for anything genuinely not ready.
 7. **Their businesses** — the places they recommend, or (for an association) their members. Find each `id` in `src/data/*.ts` and confirm it resolves — **verify every id programmatically before you finish**, a typo silently renders nothing. Association membership belongs in `src/data/memberships.ts`; derive `preferredPlaceIds` from it (`membersOf('oba', 'Oak Bluffs').map(p => p.id)`) rather than hand-listing, so a re-derived roster updates the tab for free.
 8. **Is the partner itself a listed place?** If it has a guide record, set `placeId` so it survives the lodging cull and pins first.
