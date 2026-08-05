@@ -1,21 +1,52 @@
 ---
 name: private-label
-description: Create (or update) a private-label "Mobile Concierge" edition of What's Next MV for a specific hotel or inn, living at its own web address (e.g. saltwind-concierge.netlify.app). Use whenever the user types /whatsnext:private-label or asks to "make a hotel version of the app", "private-label the guide for a hotel/inn", "white-label edition", "build a mobile concierge for <property>", "co-brand the guide", or the reverse ("remove a hotel edition"). Gathers the property's logo, colors, font, contact info, hotel Info-tab content, and preferred businesses, writes a Partner record, verifies it in the preview, walks the user through creating the edition's Netlify site, and publishes.
+description: Create (or update) a private-label "Mobile Concierge" edition of What's Next MV for a specific partner — a hotel or inn, or a business association, chamber or town — living at its own web address (e.g. saltwind-concierge.netlify.app). Use whenever the user types /whatsnext:private-label or asks to "make a hotel version of the app", "private-label the guide for a hotel/inn/association", "white-label edition", "build a mobile concierge for <partner>", "co-brand the guide", or the reverse ("remove an edition"). Gathers the partner's logo, colors, font, contact info, the sections of its custom menu, and its recommended or member businesses, writes a Partner record, verifies it in the preview, walks the user through creating the edition's Netlify site, and publishes.
 ---
 
-# Private-label a hotel/inn edition
+# Private-label edition
 
-A **private-label edition** re-skins What's Next MV as one property's own concierge. When a partner is active the app:
+A **private-label edition** re-skins What's Next MV as one partner's own concierge. Two kinds exist and they differ in more than wording:
 
-- opens on a splash with the hotel's **logo, name, font, and colors** over "Mobile Concierge";
-- carries a **"Contact <hotel>" credit on every tab** (the sponsor slot, repurposed) that offers call / website / email;
-- adds a **hotel Info subtab** (checkout time, pool/gym hours, room-service menu, key numbers, WiFi — anything the hotel wants);
-- **removes all other lodging** from the Map, Guide, and concierge (competing hotels are not listed);
-- adds a **Favorites tab** (its own tab, second — Map | Favorites | Guide | Info | Ask) listing the hotel's recommended businesses, grouped by category, each opening the normal place-detail page.
+| | **Lodging** (hotel, inn) | **Association** (business association, chamber, town) |
+|---|---|---|
+| Front door | Guest information and where to eat | The town's story, its member businesses, what's on |
+| Other lodging | **Culled** — it does not advertise competitors | **Kept** — the local inns are paying members |
+| Second tab | "Favorites" — the places it recommends | "Members" — its own roster |
+| Info subtab | Checkout, pool hours, room service | Usually none; "about us" belongs on the menu |
 
-The hotel's picks live in the **Favorites tab** — a curated subset of the Guide — rather than being boosted to the top of every list (that older ranking approach was removed as too fragile). The regular Guide/Map/concierge sort normally; only lodging is filtered out.
+When a partner is active the app:
+
+- opens on a splash with the partner's **logo, name, font, and colors** over "Mobile Concierge";
+- carries a **"Contact <partner>" credit on every tab** (the sponsor slot, repurposed) that offers call / website / email;
+- can add an **Info subtab** for a lodging partner's guest information;
+- **removes all other lodging** — but only when `hidesOtherLodging` is left at its default. An association MUST set it `false`;
+- adds a **second tab** (Map | Favorites | Guide | Info | Ask) listing the partner's businesses, grouped by category, each opening the normal place-detail page. Rename it with `favoritesLabel` / `favoritesTitle` / `favoritesBlurb`.
+
+The partner's picks live in that tab — a curated subset of the Guide — rather than being boosted to the top of every list (that older ranking approach was removed as too fragile). The regular Guide/Map/concierge sort normally.
 
 With **no** partner active the base app is byte-for-byte unchanged, so this is purely additive.
+
+## The custom menu is the partner's, not ours
+
+The front-door menu (`pocketConcierge.sections`) is an **ordered list of whatever that partner wants**, each section labelled in their words and given its own accent color. This skill does not prescribe the sections and you should not assume last edition's set — ask.
+
+In practice most editions want some mix of **retail establishments**, **historical context**, and **must-see locations**, and that is a good starting proposal. But a hotel may want its room-service menu where an association wants its membership form, and both are correct. Build what the partner asks for.
+
+Each section carries one content **shape** (`PocketSectionBody` in `src/data/partners.ts`):
+
+| `kind` | For |
+|---|---|
+| `prose` | Long-form copy, split into `chapters` — each its own nested accordion, so a history reads as a contents list rather than a wall of text |
+| `places` | Guide places in named groups (by meal, by category, by street) |
+| `activities` | Things to do, whether or not they map to a guide place |
+| `events` | `eventIds` from the guide's own EVENTS (dates stay current with the seasonal refresh) plus the partner's own `items` |
+| `info` | The partner's `infoSections` |
+| `heritage` | The African American Heritage Trail card |
+| `comingSoon` | Announced but not built — renders one note |
+
+**Accordions wherever the content allows.** Phones read them far better than long pages, and `prose` chapters plus `places` groups both collapse by default.
+
+An edition written before `sections` existed (the Saltwind demo) still uses the legacy `dining` / `shopping` / `landmarks` / `cantMiss` fields; those are folded into the same renderer and keep working untouched.
 
 ## Every edition gets its own web address
 
@@ -29,7 +60,7 @@ So a finished edition is: a Partner record (Steps 1–2) **plus** a Netlify site
 
 ## What gets measured (automatic)
 
-Nothing to configure per hotel. Every edition reports, tagged `edition = pl:<slug>`: visits and repeat visitors, screens, searches, which businesses came up and were opened, taps on directions/website/phone, and full-text concierge questions. On the hotel's OWN surfaces it also reports which sections of the curated menu were opened, which picks were taken up (from the menu and from the Favorites tab), front-desk contact taps, and use of the hotel's ask box. See `analytics/README.md` in the project. This is what a property gets shown at renewal, so **confirm Step 4's `ANALYTICS_DATABASE_URL` is set** — without it the edition silently records nothing.
+Nothing to configure per partner. Every edition reports, tagged `edition = pl:<slug>`: visits and repeat visitors, screens, searches, which businesses came up and were opened, taps on directions/website/phone, and full-text concierge questions. On the partner's OWN surfaces it also reports which sections of the curated menu were opened (by their `key`, so keep keys stable across relabels), which picks were taken up (from the menu and from the second tab), contact taps, and use of the partner's ask box. See `analytics/README.md` in the project. This is what a partner gets shown at renewal, so **confirm Step 4's `ANALYTICS_DATABASE_URL` is set** — without it the edition silently records nothing.
 
 ## Project root
 
@@ -41,41 +72,50 @@ $HOME/Documents/mv-guide
 
 | File | Role |
 |---|---|
-| `src/data/partners.ts` | The `Partner` **type**, `PARTNERS` (REAL signed partners), and `DEMO_PARTNERS` (deployed sales samples, e.g. The Saltwind Inn). `slug` sets the URL key; optional `hosts: []` lists extra addresses the edition answers to (a hotel's own `concierge.theirdomain.com`). |
+| `src/data/partners.ts` | The `Partner` **type**, the `PocketSection` menu types, `PARTNERS` (REAL signed partners), and `DEMO_PARTNERS` (deployed sales samples, e.g. The Saltwind Inn). `slug` sets the URL key; optional `hosts: []` lists extra addresses the edition answers to (a partner's own `concierge.theirdomain.com`). |
+| `src/components/PocketConcierge.tsx` | Renders the menu + panel from `sections` — or synthesises them from the legacy fields. Section-agnostic; adding a section is data. |
+| `src/data/memberships.ts` | Association membership tags. An invisible data layer — nothing in the base app renders it. |
 | `src/lib/partner.ts` | Resolves the active partner, in order: the **host** (`<slug>-concierge.netlify.app`, or anything in `hosts`), then the legacy `/h/<slug>` path, then `?partner=<slug>` for local previews. Also `useBrand()` / `isHiddenByPartner()`. |
 | `scripts/build-partner-pages.mjs` | Post-build step. With `PARTNER_SLUG` set on a Netlify site it brands that site's `index.html` and writes its manifest, so the site IS that edition. Also writes the legacy `/h/<slug>.html` pages, and points `og:image` at `public/og-<slug>.png` when one exists. |
-| `scripts/make-pwa-icons.mjs` | Home-screen icons. **Add a row to its `PARTNERS` list per hotel** and run it. |
+| `scripts/make-pwa-icons.mjs` | Home-screen icons. **Add a row to its `PARTNERS` list per edition** and run it. A dark mark needs the REVERSED copy here — the icon sits on the edition's own background color. |
 | `src/lib/filters.ts`, `src/lib/ask.ts` | Call `isHiddenByPartner` to drop competing lodging — no edits needed per partner. |
-| `src/app/(tabs)/favorites.tsx` | The hotel Favorites tab (curated subset of the Guide). |
+| `src/app/(tabs)/favorites.tsx` | The partner's second tab (curated subset of the Guide); headings overridable. |
 | `src/components/BrandHeader.tsx`, `OnboardingGate.tsx`, `src/app/(tabs)/schedules.tsx`, `src/app/(tabs)/ask.tsx`, `(tabs)/_layout.tsx` | The branded surfaces — no edits needed per partner. |
 | `netlify.toml` | Serves `/h/*`. |
 
-**Adding a partner is data-only in the app**: you write ONE `Partner` record, drop in a logo, add an icon row, and (for a real property) a share image. You should not need to touch the components. The one thing that is NOT in the repo is the edition's Netlify site — see Step 4.
+**Adding a partner is data-only in the app**: you write ONE `Partner` record, drop in a logo, add an icon row, and (for a real partner) a share image. You should not need to touch the components — the menu renderer is section-agnostic, so a brand-new set of sections is still just data.
 
-## Step 1 — Gather the property's details
+The exception is a genuinely new **content shape**. If a partner wants something none of the `kind`s can express, add the variant to `PocketSectionBody` and a branch to `sectionBody()` in `PocketConcierge.tsx` — then say so, because that IS a system change and belongs in this file.
+
+The one thing that is NOT in the repo is the edition's Netlify site — see Step 4.
+
+## Step 1 — Gather the partner's details
 
 Ask the user for (offer to proceed with sensible placeholders for anything they don't have yet):
 
 1. **Name + slug** — e.g. "The Harbor View Hotel" → `harborview` (lowercase, URL-safe). Set a clean **`shortName`** too (e.g. "Harbor View"): it drives the concierge label — the wizard and Ask-tab prompt read **"Ask your \<shortName\> Pocket Concierge"** — so avoid a leading "The" that would read as "Ask your The …".
-2. **Logo** — a file from the user. Put it at `assets/images/partners/<slug>-logo.png`. If they have only an SVG or a wordmark, rasterize/compose a clean PNG (see the demo generator note below). Never hand-fake a logo you weren't given — ask for the real asset.
-3. **Colors** — header/background, primary (buttons, links, active tab), accent (splash highlight). Pull from their brand or logo.
-4. **Font** — a web font family + its stylesheet URL (Google Fonts is fine). Sets `fontHeadingWeb` + `webFontLink`. Native use needs the face bundled in `useFonts` (`src/app/_layout.tsx`) — wire `fontHeadingNative` but note it's inactive until a native build adds the face.
-5. **Contact** — front-desk phone, website, email, address, and what to call the desk.
-6. **Hotel Info sections** — the content for the hotel subtab: check-in/out, pool & fitness hours, room-service menu, key phone numbers, WiFi/parking, and anything else they want. Each becomes a `PartnerInfoSection` (`body` paragraph and/or `rows` of label→value).
-7. **Preferred businesses** — the places they recommend. Find each one's `id` in `src/data/*.ts` (grep by name) and confirm it resolves. These fill the **Favorites tab**, grouped by category in the order listed.
-8. **Is the hotel itself a listed place?** If it has a guide record, set `placeId` so it survives the lodging cull and pins first; otherwise leave it unset (the hotel lives in its branding + Info tab).
+2. **Logo** — a file from the user, at `assets/images/partners/<slug>-logo.png`. Never hand-fake a logo you weren't given — ask for the real asset. Two things to check before you accept it:
+   - **A transparent background does not make a dark mark usable.** Dark line art on the splash color is unreadable. Either get a light/knocked-out copy and set `logoReversed` (the splash then drops the white chip and shows it directly on the color), or leave it unset and take the chip. Inverting pure black-and-white line art is a legitimate mechanical treatment; recoloring a brand is not.
+   - **A mark taller than it is wide** needs `logoPortrait: true`, or it shrinks to a stripe in the splash, header and menu boxes, all of which are sized for a landscape wordmark.
+3. **Colors** — header/background, primary (buttons, links, active tab), accent (splash highlight), plus a color per menu section. Pull them from the partner's own site rather than eyedropping a screenshot: a Squarespace site exposes `--accent-hsl` / `--darkAccent-hsl` / `--lightAccent-hsl` in its `site.css`, and most site builders expose something equivalent. **Show the user the palette and type before building.**
+4. **Font** — a web font family + its stylesheet URL (Google Fonts is fine). Sets `fontHeadingWeb` + `webFontLink`. If their face is licensed (Adobe Fonts, a foundry), pick the closest free equivalent and say so — **Jost** is already bundled and is the app's Futura stand-in, so it costs nothing and works on native too. Any other native face must be bundled in `useFonts` (`src/app/_layout.tsx`); wire `fontHeadingNative` but note it's inactive until a native build adds it.
+5. **Contact** — phone, website, email, address, and what the phone reaches (`deskLabel`).
+6. **The menu** — which sections, in what order, in whose words. See "The custom menu is the partner's" above. This is the bulk of the work; write real content, not placeholders, and use `comingSoon` for anything genuinely not ready.
+7. **Their businesses** — the places they recommend, or (for an association) their members. Find each `id` in `src/data/*.ts` and confirm it resolves — **verify every id programmatically before you finish**, a typo silently renders nothing. Association membership belongs in `src/data/memberships.ts`; derive `preferredPlaceIds` from it (`membersOf('oba', 'Oak Bluffs').map(p => p.id)`) rather than hand-listing, so a re-derived roster updates the tab for free.
+8. **Is the partner itself a listed place?** If it has a guide record, set `placeId` so it survives the lodging cull and pins first.
+9. **Does it sell rooms?** If not, set **`hidesOtherLodging: false`** and check the copy that assumes guests: `welcomeBlurb` (splash card), `favoritesTitle` / `favoritesBlurb` (second tab). The defaults all say "your stay".
 
 ## Step 2 — Write the Partner record
 
-- **Real, signed partner** → append to `PARTNERS` in `src/data/partners.ts`.
-- **Demo / sales sample** → add to `DEMO_PARTNERS` in the same file (use the `saltwind` entry as the template) and set `demo: true`. Demos DO deploy but are reachable only at their `/h/<slug>` deep link; keep contact details obviously fake (555 number, example.com) so a sample can't be mistaken for a real bookable property.
+- **Real, signed partner** → append to `PARTNERS` in `src/data/partners.ts`. Use their REAL contact details; never seed a live partner with 555 placeholders.
+- **Demo / sales sample** → add to `DEMO_PARTNERS` in the same file (use the `saltwind` entry as the template) and set `demo: true`. Demos DO deploy but are reachable only at their `/h/<slug>` deep link; keep contact details obviously fake (555 number, example.com) so a sample can't be mistaken for a real business.
 
 Match the `Partner` interface in `src/data/partners.ts` exactly (it is fully commented). Optional `favoritesLabel` renames the Favorites tab (e.g. "SW Favorites"); `conciergeLabel` is the splash subtitle; `shortName` drives the "Ask your … Pocket Concierge" prompt.
 
 Then two assets, both needed before the edition's own site goes up:
 
 1. **Home-screen icons.** Add a row to `PARTNERS` in `scripts/make-pwa-icons.mjs` (`{ slug, logo, bg }`) and run `node scripts/make-pwa-icons.mjs`. Check the result is legible at 192px and clearly NOT the island guide's WN/MV wordmark — two similar icons on one home screen is a real complaint.
-2. **Share image** (real properties; optional for a demo). A 1200×630 `public/og-<slug>.png` matching the edition's splash: logo chip on the splash colour, name in the brand's heading font, concierge label in the accent colour, tagline beneath. Without one the link previews as the island guide's card, which is a poor first impression for a hotel's own link. It is a static asset on purpose — a hotel's card needs their licensed font, which is a design step, not a build step.
+2. **Share image** (real partners; optional for a demo). A 1200×630 `public/og-<slug>.png` matching the edition's splash: logo chip on the splash colour, name in the brand's heading font, concierge label in the accent colour, tagline beneath. Without one the link previews as the island guide's card, which is a poor first impression for a partner's own link. It is a static asset on purpose. Note that librsvg ignores a base64 `@font-face`: to render the partner's real faces, point `FONTCONFIG_FILE` at a temp dir holding the TTFs.
 
 ## Step 3 — Verify in the preview
 
@@ -83,16 +123,19 @@ Then two assets, both needed before the edition's own site goes up:
 npx expo start --web --port 8081
 ```
 
-Open **`/h/<slug>`** (or `/?partner=<slug>`) and check:
+In the dev preview use **`/?partner=<slug>`** (`/h/<slug>` is written at build time, not by Metro), and check:
 
-- splash shows the hotel logo, name (in its font), colors, "Mobile Concierge";
-- the header + tab bar carry the hotel colors, and the top-right credit opens the contact sheet;
-- the **Info** tab leads with the hotel subtab and its sections;
-- **Lodging is gone** from the wizard, Map, Guide, and concierge ("where should I stay" returns nothing);
-- the **Favorites tab** shows the hotel's picks grouped by category, and a row opens a place page with Directions + Call;
-- from a pick's page, **Back returns to the curated list** you were reading, not the map;
-- the hotel logo in the header offers **"Back to the \<shortName\> Guide"** above the contact actions;
-- open the **bare** URL (`/`) and confirm the base app is unchanged (no Favorites tab, lodging back, "Ask our AI Concierge").
+- splash shows the logo — legible, right proportions — the name in its font, the colors, "Mobile Concierge";
+- the header + tab bar carry the partner's colors, and the top-right mark opens the contact sheet;
+- **every menu section** opens, and each accordion inside it opens and closes;
+- a place row opens a place page with Directions + Call, and **Back returns to the list you were reading**, not the map;
+- **lodging** is gone for a hotel edition ("where should I stay" returns nothing) and **present** for an association — compare the map's place count against the base app's; they should differ only if the cull is on;
+- the second tab is labelled and worded for this partner, not "Favorites … places we love";
+- the logo in the header offers **"Back to the \<shortName\> Guide"** above the contact actions;
+- the **Saltwind demo still works** (`/?partner=saltwind`) — it exercises the legacy menu path;
+- open **`/?partner=none`** and confirm the base app is unchanged (no second tab, lodging back, "Ask our AI Concierge"). A plain `/` will NOT do: the active edition deliberately sticks for the browsing session.
+
+The session-stickiness catches people out. If the bare URL still shows the partner, that is correct behavior, not a bug.
 
 Run `npx tsc --noEmit` and confirm no console errors.
 
@@ -123,7 +166,7 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"events":[]}' \
   https://<slug>-concierge.netlify.app/.netlify/functions/log-event
 ```
 
-The title should be the hotel's. The log call should answer `Provide 1-500 events` (the database is wired) and **not** `no database configured` (it is not). Best proof is to open the site and confirm rows land with `edition = 'pl:<slug>'`.
+The title should be the partner's. The log call should answer `Provide 1-500 events` (the database is wired) and **not** `no database configured` (it is not). Best proof is to open the site and confirm rows land with `edition = 'pl:<slug>'`.
 
 ## Step 5 — Publish (real partners only)
 
