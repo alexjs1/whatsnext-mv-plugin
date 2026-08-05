@@ -1,6 +1,5 @@
 {
   "name": "whatsnext",
-  "version": "0.8.0",
   "description": "Maintenance skills for the What's Next MV visitor-guide app (Expo/React Native, repo alexjs1/whats-next-mv): add places and events, refresh Google ratings, audit descriptions for accuracy, check concierge coverage, research the hand-curated menu filters (ribs, vegan, vegetarian, gluten-free), roll seasonal dates, set up a whole hotel edition (branding + curated Pocket Concierge) or either layer on its own, and publish (typecheck, export, verify, commit, push).",
   "author": {
     "name": "Alex Salop"
