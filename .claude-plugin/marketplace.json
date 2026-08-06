@@ -9,7 +9,7 @@
     {
       "name": "whatsnext",
       "source": "./plugins/whatsnext",
-      "description": "Maintenance skills for the What's Next MV visitor-guide app: add places and events, refresh Google ratings, audit descriptions, research menu filters, roll seasonal dates, sell featured listings, set up a hotel's private-label Pocket Concierge edition, and publish.",
+      "description": "Maintenance skills for the What's Next MV visitor-guide app: add places and events, refresh Google ratings, audit descriptions, research menu filters, roll seasonal dates, sell featured listings, build a customer's own private-label edition of the app, and publish.",
       "author": {
         "name": "Alex Salop"
       }
