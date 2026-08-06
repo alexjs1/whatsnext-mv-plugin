@@ -1,191 +1,257 @@
 ---
 name: private-label
-description: Create (or update) a private-label "Mobile Concierge" edition of What's Next MV for a specific partner — a hotel or inn, or a business association, chamber or town — living at its own web address (e.g. saltwind-concierge.netlify.app). Use whenever the user types /whatsnext:private-label or asks to "make a hotel version of the app", "private-label the guide for a hotel/inn/association", "white-label edition", "build a mobile concierge for <partner>", "co-brand the guide", or the reverse ("remove an edition"). Gathers the partner's logo, colors, font, contact info, the sections of its custom menu, and its recommended or member businesses, writes a Partner record, verifies it in the preview, walks the user through creating the edition's Netlify site, and publishes.
+description: Build (or update) a private-label edition of What's Next MV for a customer — a hotel or inn, a business association, a chamber, a town — as a custom app on the WNMV framework, living at its own web address (e.g. oba-concierge.netlify.app). Use whenever the user types /whatsnext:private-label or asks to "make a hotel version of the app", "set up a hotel edition end to end", "private-label the guide for a hotel/inn/association", "white-label edition", "build a mobile concierge for <customer>", "curate the front page for <customer>", "add a pocket concierge", "co-brand the guide", or the reverse ("remove an edition"). Gathers the customer's logo, colors, fonts, contact details and the contents of their custom menu, writes one Partner record, verifies it in the preview, walks the user through creating the edition's Netlify site, and publishes.
 ---
 
 # Private-label edition
 
-A **private-label edition** re-skins What's Next MV as one partner's own concierge. Two kinds exist and they differ in more than wording:
+A private-label edition is **a custom app built on the What's Next MV framework**. The framework is fixed; everything the visitor reads is the customer's.
 
-| | **Lodging** (hotel, inn) | **Association** (business association, chamber, town) |
-|---|---|---|
-| Front door | Guest information and where to eat | The town's story, its member businesses, what's on |
-| Other lodging | **Culled** — it does not advertise competitors | **Kept** — the local inns are paying members |
-| Second tab | "Favorites" — the places it recommends | "Members" — its own roster |
-| Info subtab | Checkout, pool hours, room service | Usually none; "about us" belongs on the menu |
+This skill owns the whole job — branding, menu, curation, verification, deployment. (It absorbed the former `pocket-concierge` and `hotel-edition` skills, which split the same work in two and drifted apart.)
 
-When a partner is active the app:
+## What every edition gets
 
-- opens on a splash with the partner's **logo, name, font, and colors** over "Mobile Concierge";
-- carries a **"Contact <partner>" credit on every tab** (the sponsor slot, repurposed) that offers call / website / email;
-- can add an **Info subtab** for a lodging partner's guest information;
-- **removes all other lodging** — but only when `hidesOtherLodging` is left at its default, which is right for a resort property and wrong for everyone else. Step 1 asks which this is; do not assume;
-- adds a **second tab** (Map | Favorites | Guide | Info | Ask) listing the partner's businesses, grouped by category, each opening the normal place-detail page. Rename it with `favoritesLabel` / `favoritesTitle` / `favoritesBlurb`.
+Regardless of customer, an edition:
 
-The partner's picks live in that tab — a curated subset of the Guide — rather than being boosted to the top of every list (that older ranking approach was removed as too fragile). The regular Guide/Map/concierge sort normally.
+- lives at **its own web address**, so two editions on one phone never collide;
+- opens on a **splash** with the customer's logo, name, font and colors;
+- shows a **custom menu** — their sections, their words, their order — that should fit above the fold;
+- carries the customer's **mark in two places** (top of the menu, top right of every other screen), both opening the same actions;
+- sits on top of the **full WNMV map, Guide and AI concierge**, which a visitor can always reach;
+- offers a **"Download the app"** route that always works;
+- **reports its own analytics**, tagged `edition = pl:<slug>`.
 
-With **no** partner active the base app is byte-for-byte unchanged, so this is purely additive.
+With no partner active the base app is byte-for-byte unchanged. This is purely additive.
 
-## The custom menu is the partner's, not ours
+## The menu is the customer's. Do not invent it.
 
-The front-door menu (`pocketConcierge.sections`) is an **ordered list of whatever that partner wants**, each section labelled in their words and given its own accent color. This skill does not prescribe the sections and you should not assume last edition's set — ask.
+**Nothing about the custom menu — not the number of entries, not their names, not their contents — is specified by this skill.** Either the user tells you what goes on it, or you ask. Do not carry over the last edition's menu; the two built so far (a demo inn, a business association) share almost no sections.
 
-In practice most editions want some mix of **retail establishments**, **historical context**, and **must-see locations**, and that is a good starting proposal. But a hotel may want its room-service menu where an association wants its membership form, and both are correct. Build what the partner asks for.
+What IS fixed is how the menu behaves:
 
-Each section carries one content **shape** (`PocketSectionBody` in `src/data/partners.ts`):
+- Every entry opens into an **accordion**. Long or complex content accordions again inside, by category or logical break.
+- One entry is **"Download the app"**.
+- Below the entries sits an **"or" divider and a line about the AI concierge**, over the ask box.
+- The customer's **logo sits above the entries** with the same tap actions as the top-right mark.
+
+---
+
+# Rules that break the app if you get them wrong
+
+Read these before writing anything. Each one cost a real bug.
+
+### A visitor must always reach the menu — and the guide
+
+Someone three taps into the Guide, or on a place page, has no way home unless you give them one.
+
+The customer's mark at the top of the menu and at the top right of every other screen open the **same actions**, rendered from one component, `src/components/PartnerContactActions.tsx`. Never hand-roll a second button list — that is exactly how the two drifted apart before. Those actions lead with **"Back to the \<shortName\> menu"** everywhere except the menu itself, where it would do nothing.
+
+The WNMV map, Guide, Info and Ask tabs stay reachable throughout. An edition is a front door onto the guide, not a replacement for it.
+
+### Ask about installing once, not repeatedly
+
+Two install surfaces exist: the `install` menu section (permanent, on demand) and the `AddToHomeScreen` banner (a timed nudge on the map). The banner must be genuinely once-per-device — record it as seen when it is **shown**, not when it is dismissed, or a visitor who ignores it gets it again on every trip back to the map.
+
+### Never start `askCta` with "Or"
+
+The menu draws a hard-coded "or" divider directly above it, so a CTA opening with "Or" prints the word twice. Write a bare instruction: "Ask any question about the town or MV".
+
+### A dark logo on a dark splash is unreadable, transparent or not
+
+Transparency does not make a dark mark legible on a deep color. Either supply a light/knocked-out copy as `logoReversed` (the splash then drops its white chip), or leave it unset and take the chip. Inverting pure black-and-white line art is a legitimate mechanical treatment; recoloring a brand is not. A mark **taller than it is wide** needs `logoPortrait: true`, or it shrinks to a stripe in boxes sized for a landscape wordmark.
+
+### Never ship a coordinate you did not confirm
+
+Walking-tour stops and map pins are frequently **private homes**. A guessed pin sends a stranger to someone's front door. `lat`/`lng` are optional precisely so an unconfirmed stop can render its text with no Directions link. See "Curating from real data" for how to resolve them safely.
+
+### Verify every place id programmatically
+
+A wrong id does not error — the row silently vanishes. Check every id resolves against `src/data/` before you finish, in a script, not by eye.
+
+### Menu real estate is the scarce resource
+
+Every row competes with the ask box below it. Before adding a section, check whether it belongs **inside** an existing one. Show the user the menu at 375px; if it overflows, cut the section blurbs (see Step 1.6) — together, and never silently.
+
+---
+
+# What the framework can hold
+
+Each menu section carries one content **shape** (`PocketSectionBody` in `src/data/partners.ts`):
 
 | `kind` | For |
 |---|---|
-| `prose` | Long-form copy, split into `chapters` — each its own nested accordion, so a history reads as a contents list rather than a wall of text |
-| `places` | Guide places in named groups (by meal, by category, by street). Set `collapsibleGroups` when there are more than a handful — each heading becomes its own accordion with a count, and a long directory collapses to one screen |
+| `prose` | Long-form copy split into `chapters`, each its own nested accordion — a history reads as a contents list, not a wall of text |
+| `places` | Guide places in named groups. `collapsibleGroups` makes each heading its own accordion with a count, so a long directory collapses to one screen |
+| `walks` | Self-guided walking tours: named walks, each an accordion of numbered stops, with a "walk this route" link and per-stop Directions. `heritage: true` appends the Heritage Trail card as a final nested entry |
+| `events` | `eventIds` from the guide's own `EVENTS` (so dates stay current with the seasonal refresh) plus the customer's own `items` |
 | `activities` | Things to do, whether or not they map to a guide place |
-| `events` | `eventIds` from the guide's own EVENTS (dates stay current with the seasonal refresh) plus the partner's own `items` |
-| `info` | The partner's `infoSections` |
-| `heritage` | The African American Heritage Trail card |
-| `walks` | Self-guided walking tours: named walks, each an accordion of numbered stops, with a "walk this route" link and per-stop Directions. `heritage: true` carries the Heritage Trail card as a final nested entry — it is a walking tour, so it belongs here rather than costing its own menu row |
+| `info` | The customer's `infoSections` (a lodging property's guest information) |
+| `heritage` | The African American Heritage Trail card; `nested` tucks its stop list into a sub-accordion |
 | `install` | "Download the app" — the written home-screen steps for both platforms, always shown |
 | `comingSoon` | Announced but not built — renders one note |
 
-**Walking tours, if a partner has one.** The Google Maps links deliberately omit an origin, so Maps routes from the visitor's CURRENT location rather than assuming they are at stop 1 — that is the difference between a tour that works and one that only works if you start at the top. A stop's `lat`/`lng` are optional and **must be left unset unless you confirmed them**: the stop still renders its text, it just gets no Directions link and drops out of the route. Walking-tour stops are frequently private homes, and a guessed pin sends a stranger to someone's front door.
+Other per-section options: `color` (its accent), `blurb` (one line under the label), `emphasis: 'filled'` (draws the menu row as a solid button — use once, for a utility item, or it stops meaning anything), and `key` (the analytics key; keep it stable across relabels).
 
-Resolve coordinates with a script that writes a review file and never edits data (`scripts/geocode-walking-tour.mjs` is the working example), then read the file. Two things it learned the hard way: the Cloud project has **Geocoding disabled** and Places enabled, and Places is the better tool anyway because it echoes back the address it matched — assert the house number and street came back as asked instead of trusting a confidence grade. Named landmarks, intersections and anything that first resolves to a street or park centroid should be re-queried **by name**, which is how four Oak Bluffs stops were rescued from the wrong pin.
+**Walking-tour routes** deliberately omit an origin from the Google Maps URL, so Maps starts from the visitor's **current location** rather than assuming they are at stop 1.
 
-**Give every edition an `install` section.** The contact sheet also offers add-to-home-screen, but it hides the written steps behind a single button whenever the browser offers a native prompt — so a visitor looking for "how do I download this" can find nothing at all. A menu item named for the job is the fix.
+**If a customer wants something no shape can express**, add a variant to `PocketSectionBody` and a branch to `sectionBody()` in `PocketConcierge.tsx` — then say so, because that is a framework change and belongs in this file.
 
-**Ask about installing ONCE.** Editions have two install surfaces: the `install` menu section (permanent, on demand) and the `AddToHomeScreen` banner (a timed nudge on the map). The banner must be genuinely once-per-device — record it as seen when it is SHOWN, not when it is dismissed, or a visitor who ignores it gets it again on every trip back to the map. More than one reminder reads as nagging.
+An edition written before `sections` existed (the Saltwind demo) uses the legacy `dining` / `shopping` / `landmarks` / `cantMiss` fields. Those still render through the same code. Leave them alone; do not use them for new work.
 
-**Never start `askCta` with "Or".** The menu draws a hard-coded "or" divider directly above it, so a CTA opening with "Or" prints the word twice. Write it as a bare instruction — "Ask any question about the town or MV", not "Or ask us anything".
+---
 
-**Menu real estate is the scarce resource.** Every row competes with the ask box below it. Before adding a section, check whether it belongs *inside* an existing one — the Heritage Trail ended up nested in the walking tours for exactly this reason. `emphasis: 'filled'` draws one row as a solid button so a utility item reads as different in kind; use it once, or it stops meaning anything.
+# Curating from real data
 
-**Write a `blurb` for each section, then drop them if the menu will not fit.** A one-line blurb under each label genuinely helps — it tells a visitor what a section holds before they spend a tap on it — and at three or five sections there is room for them. They become the thing to cut only when the menu outgrows a phone screen: seven blurbs cost more vertical space than an eighth section, and removing them also stops long labels wrapping. So offer them by default, show the user the menu at 375px, and cut them together if it overflows. Never silently.
+When a section lists places, ground it in the guide's own data and live ratings rather than memory — then **get the user's approval before writing anything**. The human sign-off is the point, as in `/whatsnext:research-tag`.
 
-**Accordions wherever the content allows.** Phones read them far better than long pages, and `prose` chapters plus `places` groups both collapse by default.
-
-### A visitor must always be able to get back to the menu
-
-The curated menu is the front door, and someone three taps deep in the Guide or on a place page has no obvious way home unless you give them one. So, in every edition:
-
-- The partner's **mark sits at the top of the menu** and at the **top right of every other screen**, and both open the SAME actions — call, website, email, the partner's `contact.links`, and add-to-home-screen. They render from one component, `src/components/PartnerContactActions.tsx`; do not hand-roll a second button list, which is exactly how the two drifted apart before.
-- Those actions lead with **"Back to the \<shortName\> menu"** on every surface except the menu itself, where it would do nothing. It works from a place page too (the header steps back to a tab first, then the gate reopens the concierge).
-
-Treat "can I get to the menu from here?" as part of Step 3's verification, not a nicety.
-
-An edition written before `sections` existed (the Saltwind demo) still uses the legacy `dining` / `shopping` / `landmarks` / `cantMiss` fields; those are folded into the same renderer and keep working untouched.
-
-## Every edition gets its own web address
-
-**This is the part that is easy to get wrong.** An edition does NOT just live at `whatsnextmv.com/h/<slug>` any more. It gets its **own Netlify site**, built from the same repository, at its own address (e.g. `saltwind-concierge.netlify.app`).
-
-The reason is phones, not tidiness. A phone decides which installed app owns a link by its **web address**. When every edition shared `whatsnextmv.com`, installing one blocked the others and links opened the wrong edition — the public guide would open inside a hotel's app, and Android refused to install a second one at all. On its own address, an edition's app covers only that address and they stop fighting.
-
-`/h/<slug>` still works, so QR codes and emails already in the wild keep opening. It is a **legacy path**, not where new editions are sent.
-
-So a finished edition is: a Partner record (Steps 1–2) **plus** a Netlify site (Step 4). Skipping Step 4 leaves the edition reachable only at the legacy path, and with no analytics of its own.
-
-## What gets measured (automatic)
-
-Nothing to configure per partner. Every edition reports, tagged `edition = pl:<slug>`: visits and repeat visitors, screens, searches, which businesses came up and were opened, taps on directions/website/phone, and full-text concierge questions. On the partner's OWN surfaces it also reports which sections of the curated menu were opened (by their `key`, so keep keys stable across relabels), which picks were taken up (from the menu and from the second tab), contact taps, and use of the partner's ask box. See `analytics/README.md` in the project. This is what a partner gets shown at renewal, so **confirm Step 4's `ANALYTICS_DATABASE_URL` is set** — without it the edition silently records nothing.
-
-## Project root
+Node can import `PLACES` and `RATINGS` (relative imports, explicit `.ts`) but NOT `rating.ts`, which has an `@/` value import that fails outside Metro. Read `RATINGS` directly:
 
 ```
-$HOME/Documents/mv-guide
+cd "$HOME/Documents/mv-guide" && node --input-type=module -e '
+import { PLACES } from "./src/data/places.ts";
+import { RATINGS } from "./src/data/ratings.ts";
+const R=(id)=>RATINGS[id]?.rating??0, rc=(id)=>RATINGS[id]?.count??0;
+const TOWN="Oak Bluffs";
+const inTown=PLACES.filter(p=>(p.town||"").includes(TOWN));
+const line=(p)=>`  ${p.name} [${p.tier||"?"}] ★${R(p.id).toFixed(1)}(${rc(p.id)}) id=${p.id}`;
+for (const c of ["restaurant","shop","landmark","venue","beach","lodging"]) {
+  console.log("== "+c+" ==");
+  inTown.filter(p=>p.category===c).sort((x,y)=>R(y.id)-R(x.id)).slice(0,12).forEach(p=>console.log(line(p)));
+}
+' 2>&1 | grep -v -iE "warning|reparsing|trace-warnings|module_typeless|es module|performance overhead|eliminate"
 ```
 
-## How it's wired (read before editing)
+- Prefer well-reviewed, recognizable places; be wary of a 5.0 with three reviews.
+- **Verify price tiers and any distance/walkability claim from the data**, never assume.
+- For an association, membership belongs in `src/data/memberships.ts`; derive the list from it (`membersOf('oba', 'Oak Bluffs').map(p => p.id)`) rather than hand-listing, so a re-derived roster updates for free.
+- Present the full draft. Let the user approve, swap or cut. **Do not write the record until they approve.**
+
+### Coordinates, when a section needs them
+
+Resolve them with a script that writes a **review file and never edits data** (`scripts/geocode-walking-tour.mjs` is the working example), then read the file. Two things learned the hard way:
+
+- The Cloud project has **Geocoding disabled** and Places enabled. Places is the better tool regardless: it echoes back the address it matched, so you can assert the house number and street came back as asked instead of trusting a confidence grade.
+- Anything that resolves to a **street or park centroid** should be re-queried **by name**. That is how four Oak Bluffs stops were rescued from the wrong pin — a statue that resolved to the middle of a park, a house that resolved to the next town.
+
+Leave `lat`/`lng` unset for anything you could not confirm.
+
+---
+
+# Customizing a place's description
+
+Two different things, often confused:
+
+- **Globally** — the business's own copy shows in WNMV *and* in every edition. This already has a skill: call **`/whatsnext:customize-description`**. Do not reinvent it here.
+- **In this edition only** — today a menu pick takes a `desc` that overrides the guide's wording, **but only on that menu row**. Tap through to the place page and the global description returns.
+
+A full edition-scoped override — one that follows the place into the Guide, the map and the second tab — is **not built**. If a customer asks, say so plainly rather than promising it, and treat it as a framework change.
+
+**Expected direction:** customers will likely want an edition's custom description **promoted to the global WNMV description** on request. Design any future override with that promotion path in mind rather than as a dead end.
+
+---
+
+# How it's wired
+
+Project root: `$HOME/Documents/mv-guide`
 
 | File | Role |
 |---|---|
-| `src/data/partners.ts` | The `Partner` **type**, the `PocketSection` menu types, `PARTNERS` (REAL signed partners), and `DEMO_PARTNERS` (deployed sales samples, e.g. The Saltwind Inn). `slug` sets the URL key; optional `hosts: []` lists extra addresses the edition answers to (a partner's own `concierge.theirdomain.com`). |
-| `src/components/PocketConcierge.tsx` | Renders the menu + panel from `sections` — or synthesises them from the legacy fields. Section-agnostic; adding a section is data. |
-| `src/data/memberships.ts` | Association membership tags. An invisible data layer — nothing in the base app renders it. |
-| `src/lib/partner.ts` | Resolves the active partner, in order: the **host** (`<slug>-concierge.netlify.app`, or anything in `hosts`), then the legacy `/h/<slug>` path, then `?partner=<slug>` for local previews. Also `useBrand()` / `isHiddenByPartner()`. |
-| `scripts/build-partner-pages.mjs` | Post-build step. With `PARTNER_SLUG` set on a Netlify site it brands that site's `index.html` and writes its manifest, so the site IS that edition. Also writes the legacy `/h/<slug>.html` pages, and points `og:image` at `public/og-<slug>.png` when one exists. |
-| `scripts/make-pwa-icons.mjs` | Home-screen icons. **Add a row to its `PARTNERS` list per edition** and run it. A dark mark needs the REVERSED copy here — the icon sits on the edition's own background color. |
-| `src/lib/filters.ts`, `src/lib/ask.ts` | Call `isHiddenByPartner` to drop competing lodging — no edits needed per partner. |
-| `src/app/(tabs)/favorites.tsx` | The partner's second tab (curated subset of the Guide); headings overridable. |
-| `src/components/BrandHeader.tsx`, `OnboardingGate.tsx`, `src/app/(tabs)/schedules.tsx`, `src/app/(tabs)/ask.tsx`, `(tabs)/_layout.tsx` | The branded surfaces — no edits needed per partner. |
-| `netlify.toml` | Serves `/h/*`. |
+| `src/data/partners.ts` | The `Partner` type, the `PocketSection` menu types, `PARTNERS` (real signed customers) and `DEMO_PARTNERS` (deployed sales samples). `slug` sets the URL key; `hosts: []` lists extra addresses the edition answers to |
+| `src/components/PocketConcierge.tsx` | Renders the menu and its panels from `sections`. Section-agnostic — adding a section is data |
+| `src/components/PartnerContactActions.tsx` | The single button list behind BOTH marks. Add actions here, never in a host |
+| `src/components/InstallAction.tsx` | The contact sheet's install control, and the exported `InstallSteps` the `install` section renders |
+| `src/components/AddToHomeScreen.tsx` | The timed install banner on the map. Once per device |
+| `src/lib/partner.ts` | Resolves the active partner: host, then legacy `/h/<slug>`, then `?partner=<slug>` for previews. Also `useBrand()` / `isHiddenByPartner()` / `ensureInstallable()` |
+| `src/data/memberships.ts` | Association membership tags. Invisible in the base app |
+| `src/app/(tabs)/favorites.tsx` | The customer's second tab; all headings overridable |
+| `scripts/build-partner-pages.mjs` | Post-build. With `PARTNER_SLUG` set it brands that site's `index.html` and rewrites its manifest; also writes the legacy `/h/<slug>.html` pages |
+| `scripts/make-pwa-icons.mjs` | Home-screen icons. Add a row per edition and run it |
+| `src/lib/filters.ts`, `src/lib/ask.ts` | Call `isHiddenByPartner`; no per-customer edits |
+| `netlify.toml` | Serves `/h/*` |
 
-**Adding a partner is data-only in the app**: you write ONE `Partner` record, drop in a logo, add an icon row, and (for a real partner) a share image. You should not need to touch the components — the menu renderer is section-agnostic, so a brand-new set of sections is still just data.
+**Adding a customer is data-only**: one `Partner` record, a logo, an icon row, a share image. You should not touch the components.
 
-The exception is a genuinely new **content shape**. If a partner wants something none of the `kind`s can express, add the variant to `PocketSectionBody` and a branch to `sectionBody()` in `PocketConcierge.tsx` — then say so, because that IS a system change and belongs in this file.
+## Every edition gets its own web address
 
-The one thing that is NOT in the repo is the edition's Netlify site — see Step 4.
+An edition does NOT just live at `whatsnextmv.com/h/<slug>`. It gets its **own Netlify site**, built from the same repository.
 
-## Step 1 — Gather the partner's details
+The reason is phones. A phone decides which installed app owns a link by its **web address**. When editions shared one address, installing one blocked the others and links opened the wrong edition — Android refused to install a second at all. `/h/<slug>` still works so existing QR codes keep opening, but it is a **legacy path**, not where new editions are sent.
 
-Ask the user for (offer to proceed with sensible placeholders for anything they don't have yet):
+A finished edition is a Partner record **plus** a Netlify site. Skip the site and it is reachable only at the legacy path, with no analytics of its own.
 
-1. **Name + slug** — e.g. "The Harbor View Hotel" → `harborview` (lowercase, URL-safe). Set a clean **`shortName`** too (e.g. "Harbor View"): it drives the concierge label — the wizard and Ask-tab prompt read **"Ask your \<shortName\> Pocket Concierge"** — so avoid a leading "The" that would read as "Ask your The …".
-2. **Logo** — a file from the user, at `assets/images/partners/<slug>-logo.png`. Never hand-fake a logo you weren't given — ask for the real asset. Two things to check before you accept it:
-   - **A transparent background does not make a dark mark usable.** Dark line art on the splash color is unreadable. Either get a light/knocked-out copy and set `logoReversed` (the splash then drops the white chip and shows it directly on the color), or leave it unset and take the chip. Inverting pure black-and-white line art is a legitimate mechanical treatment; recoloring a brand is not.
-   - **A mark taller than it is wide** needs `logoPortrait: true`, or it shrinks to a stripe in the splash, header and menu boxes, all of which are sized for a landscape wordmark.
-3. **Colors** — header/background, primary (buttons, links, active tab), accent (splash highlight), plus a color per menu section. Pull them from the partner's own site rather than eyedropping a screenshot: a Squarespace site exposes `--accent-hsl` / `--darkAccent-hsl` / `--lightAccent-hsl` in its `site.css`, and most site builders expose something equivalent. **Show the user the palette and type before building.**
-4. **Font** — a web font family + its stylesheet URL (Google Fonts is fine). Sets `fontHeadingWeb` + `webFontLink`. If their face is licensed (Adobe Fonts, a foundry), pick the closest free equivalent and say so — **Jost** is already bundled and is the app's Futura stand-in, so it costs nothing and works on native too. Any other native face must be bundled in `useFonts` (`src/app/_layout.tsx`); wire `fontHeadingNative` but note it's inactive until a native build adds it.
-5. **Contact** — phone, website, email, address, and what the phone reaches (`deskLabel`). Anything else they want one tap from every screen — a membership application, a booking page — goes in `contact.links` as `{ label, url }`.
-6. **The menu** — which sections, in what order, in whose words. See "The custom menu is the partner's" above. This is the bulk of the work; write real content, not placeholders, and use `comingSoon` for anything genuinely not ready.
-7. **Their businesses** — the places they recommend, or (for an association) their members. Find each `id` in `src/data/*.ts` and confirm it resolves — **verify every id programmatically before you finish**, a typo silently renders nothing. Association membership belongs in `src/data/memberships.ts`; derive `preferredPlaceIds` from it (`membersOf('oba', 'Oak Bluffs').map(p => p.id)`) rather than hand-listing, so a re-derived roster updates the tab for free.
-8. **Is the partner itself a listed place?** If it has a guide record, set `placeId` so it survives the lodging cull and pins first.
-9. **ASK: is this edition for a resort property — a hotel or an inn?** Do not infer it from the partner's name or from the fact that they have rooms; ask outright, because the answer decides whether **competing lodging is hidden**, and both ways of getting it wrong are bad. A hotel that lists rival inns is advertising its competitors. An association or chamber whose inns vanish has deleted paying members from its own map, and their rows in the members tab open nothing.
-   - **Yes, a resort property** → leave `hidesOtherLodging` at its default (true). Set `placeId` if the property has its own guide record, so it survives the cull and pins first.
-   - **No** → set **`hidesOtherLodging: false`**, and fix the copy that assumes guests: `welcomeBlurb` (splash card), `favoritesTitle` / `favoritesBlurb` (second tab). The defaults all say "your stay" or "places we love".
+## What gets measured (automatic)
 
-## Step 2 — Write the Partner record
+Nothing to configure. Every edition reports, tagged `edition = pl:<slug>`: visits and repeat visitors, screens, searches, which businesses surfaced and were opened, taps on directions/website/phone, and full-text concierge questions. On the customer's own surfaces it also reports which menu sections were opened (by `key`), which picks were taken up, contact taps, and use of their ask box. See `analytics/README.md`. This is what a customer is shown at renewal, so confirm `ANALYTICS_DATABASE_URL` is set — without it the edition silently records nothing.
 
-- **Real, signed partner** → append to `PARTNERS` in `src/data/partners.ts`. Use their REAL contact details; never seed a live partner with 555 placeholders.
-- **Demo / sales sample** → add to `DEMO_PARTNERS` in the same file (use the `saltwind` entry as the template) and set `demo: true`. Demos DO deploy but are reachable only at their `/h/<slug>` deep link; keep contact details obviously fake (555 number, example.com) so a sample can't be mistaken for a real business.
+---
 
-Match the `Partner` interface in `src/data/partners.ts` exactly (it is fully commented). Optional `favoritesLabel` renames the Favorites tab (e.g. "SW Favorites"); `conciergeLabel` is the splash subtitle (the menu card does NOT repeat it — the splash has just said it, and the line costs a row); `shortName` drives the "Ask your … Pocket Concierge" prompt.
+# Step 1 — Gather the customer's details
 
-Then two assets, both needed before the edition's own site goes up:
+Offer sensible placeholders for anything they don't have yet.
 
-1. **Home-screen icons.** Add a row to `PARTNERS` in `scripts/make-pwa-icons.mjs` (`{ slug, logo, bg }`) and run `node scripts/make-pwa-icons.mjs`. Check the result is legible at 192px and clearly NOT the island guide's WN/MV wordmark — two similar icons on one home screen is a real complaint.
-2. **Share image** (real partners; optional for a demo). A 1200×630 `public/og-<slug>.png` matching the edition's splash: logo chip on the splash colour, name in the brand's heading font, concierge label in the accent colour, tagline beneath. Without one the link previews as the island guide's card, which is a poor first impression for a partner's own link. It is a static asset on purpose. Note that librsvg ignores a base64 `@font-face`: to render the partner's real faces, point `FONTCONFIG_FILE` at a temp dir holding the TTFs.
+1. **Name + slug** — "The Harbor View Hotel" → `harborview`. Set a clean `shortName` ("Harbor View"): it drives "Ask your \<shortName\> …", so avoid a leading "The".
+2. **Logo** — a real file from the user, at `assets/images/partners/<slug>-logo.png`. Never hand-fake a mark. Check it against the logo rule above (`logoReversed`, `logoPortrait`).
+3. **Colors** — header/background, primary, accent, plus one per menu section. Pull them from the customer's own site rather than eyedropping a screenshot: a Squarespace site exposes `--accent-hsl` / `--darkAccent-hsl` / `--lightAccent-hsl` in `site.css`; most builders expose an equivalent. **Show the user the palette and type before building anything.**
+4. **Fonts** — family + stylesheet URL (Google Fonts is fine) → `fontHeadingWeb` + `webFontLink`. If their face is licensed (Adobe Fonts, a foundry), pick the closest free equivalent and say so — **Jost** is already bundled and is the app's Futura stand-in, so it costs nothing and works on native.
+5. **Contact** — phone, website, email, address, and what the phone reaches (`deskLabel`). Anything else they want one tap from every screen — a membership application, a booking page — goes in `contact.links`.
+6. **The menu** — which sections, in what order, in whose words. Ask; do not assume. Write real content, not placeholders; use `comingSoon` for anything genuinely not ready. Write a `blurb` per section by default, and cut them all if the menu overflows a phone screen.
+7. **Their places** — see "Curating from real data". Approval gate applies.
+8. **ASK: is this edition for a resort property — a hotel or an inn?** Do not infer it from the name or from the fact that they have rooms. The answer decides whether **competing lodging is hidden**, and both wrong answers are costly: a hotel listing rival inns advertises its competitors; an association whose inns vanish has deleted paying members from its own map, and their rows open nothing.
+   - **Yes** → leave `hidesOtherLodging` at its default (true). Set `placeId` if the property has a guide record, so it survives the cull and pins first.
+   - **No** → set **`hidesOtherLodging: false`**, and fix the copy that assumes guests: `welcomeBlurb` (splash card), `favoritesTitle` / `favoritesBlurb` (second tab). The defaults say "your stay" and "places we love".
 
-## Step 3 — Verify in the preview
+# Step 2 — Write the Partner record
+
+- **Real, signed customer** → append to `PARTNERS`. Use their real contact details; never seed a live customer with 555 placeholders.
+- **Demo / sales sample** → add to `DEMO_PARTNERS`, set `demo: true`, and keep contact details obviously fake (555, example.com) so a sample can't be mistaken for a real business.
+
+Match the `Partner` interface exactly; it is fully commented. `conciergeLabel` is the splash subtitle — the menu card does not repeat it, because the splash has just said it and the line costs a row.
+
+Then two assets:
+
+1. **Home-screen icons.** Add a row to `PARTNERS` in `scripts/make-pwa-icons.mjs` and run it. A dark mark needs the **reversed** copy here — the icon sits on the brand color. Check it is legible at 192px and clearly NOT the island guide's WN/MV wordmark; two similar icons on one home screen is a real complaint.
+2. **Share image** — a 1200×630 `public/og-<slug>.png` matching the splash. Without one the link previews as the island guide's card. Note that librsvg ignores a base64 `@font-face`: to render the customer's real faces, point `FONTCONFIG_FILE` at a temp dir holding the TTFs.
+
+**Manifests:** the edition's own site gets its manifest rewritten at build time by `build-partner-pages.mjs`, so nothing to do. Only if you also want the **legacy `/h/<slug>` path** installable under the customer's name do you need `public/manifest-<slug>.webmanifest` (copy `manifest-saltwind.webmanifest`). Keep it at the root of `public/` — the `/h/*` rewrite would shadow it.
+
+# Step 3 — Verify in the preview
 
 ```
 npx expo start --web --port 8081
 ```
 
-In the dev preview use **`/?partner=<slug>`** (`/h/<slug>` is written at build time, not by Metro), and check:
+Use **`/?partner=<slug>`** — `/h/<slug>` is written at build time, not by Metro. Check:
 
-- splash shows the logo — legible, right proportions — the name in its font, the colors, "Mobile Concierge";
-- the header + tab bar carry the partner's colors, and the top-right mark opens the contact sheet;
-- **every menu section** opens, and each accordion inside it opens and closes;
+- splash: logo legible and correctly proportioned, name in its font, the colors;
+- the menu **fits above the fold at 375px**, and every section and nested accordion opens and closes;
 - a place row opens a place page with Directions + Call, and **Back returns to the list you were reading**, not the map;
-- **lodging** is gone for a hotel edition ("where should I stay" returns nothing) and **present** for an association — compare the map's place count against the base app's; they should differ only if the cull is on;
-- the second tab is labelled and worded for this partner, not "Favorites … places we love";
-- the mark at the top of the MENU and the one at the top RIGHT of every other screen open the same actions, and every surface except the menu leads with **"Back to the \<shortName\> menu"** — test it from a place page, which is the case that used to strand people;
+- **both marks** (menu top, header top-right) open the same actions, and every surface except the menu leads with "Back to the … menu" — **test from a place page**, the case that used to strand people;
+- the map, Guide, Info and Ask tabs all work;
+- **lodging** is absent for a resort property and present otherwise — compare the map's place count against the base app's;
+- the second tab is worded for this customer, not "Favorites … places we love";
 - the **Saltwind demo still works** (`/?partner=saltwind`) — it exercises the legacy menu path;
-- open **`/?partner=none`** and confirm the base app is unchanged (no second tab, lodging back, "Ask our AI Concierge"). A plain `/` will NOT do: the active edition deliberately sticks for the browsing session.
+- **`/?partner=none`** shows the unchanged base app. A plain `/` will NOT do: the active edition deliberately sticks for the browsing session, which is correct behavior, not a bug.
 
-The session-stickiness catches people out. If the bare URL still shows the partner, that is correct behavior, not a bug.
+Then `npx tsc --noEmit` and a clean console.
 
-Run `npx tsc --noEmit` and confirm no console errors.
+# Step 4 — Give the edition its own address (ASK THE USER)
 
-## Step 4 — Give the edition its own address (ASK THE USER)
+The Netlify site cannot be created from the repo. Offer these steps and wait:
 
-The Netlify site cannot be created from the repo, so **prompt the user to do it** and wait for confirmation. Offer these steps verbatim; it takes about five minutes.
-
-> 1. In Netlify, choose **Add new site → Import an existing project**.
-> 2. Pick the same repository as the main site (`alexjs1/whats-next-mv`). Nothing is copied or forked — every edition builds from the same code.
+> 1. In Netlify, **Add new site → Import an existing project**.
+> 2. Pick the same repository as the main site (`alexjs1/whats-next-mv`). Nothing is forked — every edition builds from the same code.
 > 3. Leave the build settings as they come across.
-> 4. Under **Project configuration → Environment variables**, add two:
->    - `PARTNER_SLUG` = `<slug>` — the only thing that makes this site a different edition.
->    - `ANALYTICS_DATABASE_URL` — the same value the main site uses. **Without it the edition silently records nothing**: the log function accepts every batch and discards it.
-> 5. Under **Project configuration → Change site name**, set `<slug>-concierge`, giving `<slug>-concierge.netlify.app`.
+> 4. Under **Project configuration → Environment variables**, add `PARTNER_SLUG` = `<slug>`. That single variable is what makes this site a different edition.
+> 5. Under **Change site name**, set `<slug>-concierge`.
 > 6. Deploy.
 
-Notes to hold on to:
+`ANALYTICS_DATABASE_URL` is usually inherited from a shared/team variable — check before asking them to add it. Notes worth holding on to:
 
-- **No Gemini key is needed.** The concierge endpoint is absolute (`extra.askEndpoint` in `app.json` → the What's Next MV site), so every edition inherits that one key. The copy of `ask.mjs` on an edition's own site is never called — testing it with `curl` proves nothing about the app.
-- Environment variables only take effect on a **new deploy**, and on Netlify Pro a variable must have **Functions** in its scope to be readable by a function.
-- A site-level variable **overrides** a shared/team one with the same name.
+- Variables take effect only on a **new deploy**, and on Netlify Pro a variable must have **Functions** in scope to be readable by a function.
+- A site-level variable **overrides** a shared one of the same name, so don't add one "to be safe".
+- **No Gemini key is needed.** The concierge endpoint is absolute (`extra.askEndpoint`), so every edition inherits one key. The copy of `ask.mjs` on an edition's site is never called.
 
-Then verify from outside, and say what you checked:
+Then verify from outside:
 
 ```
 curl -s https://<slug>-concierge.netlify.app/ | grep -o '<title>[^<]*</title>'
@@ -193,19 +259,22 @@ curl -s -X POST -H 'Content-Type: application/json' -d '{"events":[]}' \
   https://<slug>-concierge.netlify.app/.netlify/functions/log-event
 ```
 
-The title should be the partner's. The log call should answer `Provide 1-500 events` (the database is wired) and **not** `no database configured` (it is not). Best proof is to open the site and confirm rows land with `edition = 'pl:<slug>'`.
+The title should be the customer's. The log call should answer `Provide 1-500 events` — `no database configured` means the analytics variable is not reaching the function.
 
-## Step 5 — Publish (real partners only)
+# Step 5 — Publish
 
-For a real signed partner, follow `/whatsnext:publish` (typecheck → export → verify → commit → push). Every Netlify site built from the repo redeploys, so the edition's site picks the change up automatically.
+Follow `/whatsnext:publish` (typecheck → export → verify → commit → push). Every Netlify site built from the repo redeploys, so the edition picks the change up automatically.
 
-**Demos** in `DEMO_PARTNERS` deploy with the app but are never linked from the base app, and the site is `noindex`. Keep their contact details fake. Drop them from `DEMO_PARTNERS` once real partners exist.
+Keep `DEVELOPMENT.md` current when the partner **system** changes; adding an individual customer is data and needs no doc change.
 
-## Removing an edition
+# Removing an edition
 
-Delete the partner's entry from `PARTNERS` (or `DEMO_PARTNERS`), its logo, its icon row in `make-pwa-icons.mjs`, its `public/icons/<slug>-*.png`, and `public/og-<slug>.png`. Then **delete the edition's Netlify site** — ask the user; nothing in the repo can. Leaving it up serves a stale copy of the edition at its own address forever.
+Delete the entry from `PARTNERS` / `DEMO_PARTNERS`, its logo, its icon row in `make-pwa-icons.mjs`, `public/icons/<slug>-*.png`, `public/og-<slug>.png`, and any `manifest-<slug>.webmanifest`. Then **ask the user to delete the edition's Netlify site** — nothing in the repo can. Leaving it up serves a stale copy at its own address forever.
 
-## Notes
+# Known gaps
 
-- The demo logo was generated with a small `sharp` script (SVG → PNG) run from inside the project so it resolves `node_modules`. Reuse that approach only to compose a PNG from assets the user provides — not to invent a brand.
-- Keep `DEVELOPMENT.md` / `APP_OVERVIEW.md` current when the partner SYSTEM changes; adding an individual partner is data and needs no doc change.
+Say so plainly when a customer asks for these; do not promise them.
+
+- **Edition-only descriptions that follow a place everywhere** — see "Customizing a place's description". Only the menu row is overridable today.
+- **Promoting an edition's custom description to WNMV globally** — expected to be wanted; not built.
+- **Native (App Store) builds** — editions are web apps installed to the home screen. A bundled native font (`fontHeadingNative`) is wired but inactive until a native build adds the face.

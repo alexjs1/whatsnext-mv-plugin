@@ -36,9 +36,7 @@ Invoke any skill as `/whatsnext:<skill>`.
 
 | Skill | Purpose |
 |---|---|
-| `/whatsnext:hotel-edition` | The whole thing end to end: branded edition + curated concierge + its own site. |
-| `/whatsnext:private-label` | Just the branded edition: logo, colors, font, contact, Favorites tab, lodging removed. |
-| `/whatsnext:pocket-concierge` | Just the curated front door: hand-picked dining, shopping, landmarks, heritage, can't-miss. |
+| `/whatsnext:private-label` | A customer's own edition of the app, end to end: their branding, their custom menu, its own web address. |
 
 An edition lives at **its own web address** (`<slug>-concierge.netlify.app`), on its own
 Netlify site built from the same repo. That is what stops editions colliding with the
