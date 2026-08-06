@@ -56,7 +56,7 @@ Start the preview (`preview_start`, `vineyard-guide-web`, 8081), open `/ask`, an
 **For a coverage gap**, add a dedicated intent, following the existing patterns:
 
 - Place it **before** the generic keyword fallback near the end.
-- Reuse the shared helpers: `inTown(...)` to narrow by a named town, `listOf(...)` to format a rating-sorted list with the standard proviso, and `sortByRating`.
+- Reuse the shared helpers: `inTown(...)` to narrow by a named town, `listOf(...)` to format a sorted list with the standard proviso, and `sortPlaces` (Featured first, then alphabetical; `sortLodging` for lodging).
 - For categories with price tiers (restaurants, lodging), degrade gracefully when a tier is absent in a town — filter to the requested tier, and if none exist, fall to the nearest tier with entries and say so, rather than silently showing everything.
 
 After any fix, **re-run the battery (Step 0)** to confirm the fix works AND nothing else regressed.

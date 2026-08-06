@@ -4,8 +4,8 @@ A single-plugin Claude Code marketplace for **What's Next MV**, the Martha's Vin
 visitor guide built by [Island Analytics](https://island-analytics.com).
 
 The plugin, **`whatsnext`**, carries the skills that maintain the app: adding places and
-events, refreshing Google ratings, auditing descriptions for accuracy, selling featured
-listings, setting up a hotel's private-label Pocket Concierge edition, and publishing.
+events, auditing descriptions for accuracy, selling featured listings, building a
+customer's private-label edition of the app, and publishing.
 
 - **The plugin and its full skill list:** [`plugins/whatsnext/README.md`](plugins/whatsnext/README.md)
 - **App repo:** [`alexjs1/whats-next-mv`](https://github.com/alexjs1/whats-next-mv)

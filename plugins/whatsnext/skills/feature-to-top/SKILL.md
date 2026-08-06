@@ -39,6 +39,6 @@ Keep TS-string rules in mind for any nearby edits (curly apostrophes; never `Str
 
 ## Step 3 — Publish
 
-Run `/whatsnext:publish`. In the preview, open the Guide, filter to the place's category, and confirm it now leads the list with the gold "Featured" tag (and, for a removal, that it's back in rating order with no tag).
+Run `/whatsnext:publish`. In the preview, open the Guide, filter to the place's category, and confirm it now appears in the gold **Featured** section at the top of the list with the "Featured" tag (and, for a removal, that the Featured section no longer carries it — and disappears entirely if it was the only one — and the place sits in its normal alphabetical spot with no tag).
 
 > Note: "first" means first **within its category** (a featured restaurant leads the restaurant list, not the whole guide). The gold map star is a separate perk — see `/whatsnext:feature-star`.

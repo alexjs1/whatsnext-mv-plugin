@@ -102,26 +102,26 @@ An edition written before `sections` existed (the Saltwind demo) uses the legacy
 
 # Curating from real data
 
-When a section lists places, ground it in the guide's own data and live ratings rather than memory — then **get the user's approval before writing anything**. The human sign-off is the point, as in `/whatsnext:research-tag`.
+When a section lists places, ground it in the guide's own data rather than memory — then **get the user's approval before writing anything**. The human sign-off is the point, as in `/whatsnext:research-tag`.
 
-Node can import `PLACES` and `RATINGS` (relative imports, explicit `.ts`) but NOT `rating.ts`, which has an `@/` value import that fails outside Metro. Read `RATINGS` directly:
+**There are no ratings to sort by.** Google's star ratings were removed in Aug 2026 (`src/data/ratings.ts` and `fetch-ratings.mjs` are gone — see `DEVELOPMENT.md` → "Google Maps Platform terms"). Do not reinstate them, and do not rank a customer's list by a number. Curation here is editorial: read each candidate's own `description`, `tier`, `meals`, `scene` and location, and pick.
+
+Node can import `PLACES` (relative import, explicit `.ts`) but NOT `rating.ts`, which has an `@/` value import that fails outside Metro. Print the candidates and read them:
 
 ```
 cd "$HOME/Documents/mv-guide" && node --input-type=module -e '
 import { PLACES } from "./src/data/places.ts";
-import { RATINGS } from "./src/data/ratings.ts";
-const R=(id)=>RATINGS[id]?.rating??0, rc=(id)=>RATINGS[id]?.count??0;
 const TOWN="Oak Bluffs";
 const inTown=PLACES.filter(p=>(p.town||"").includes(TOWN));
-const line=(p)=>`  ${p.name} [${p.tier||"?"}] ★${R(p.id).toFixed(1)}(${rc(p.id)}) id=${p.id}`;
+const line=(p)=>`  ${p.name} [${p.tier||"?"}]${p.priority?" *FEATURED*":""} id=${p.id}\n      ${(p.description||"").slice(0,140)}`;
 for (const c of ["restaurant","shop","landmark","venue","beach","lodging"]) {
   console.log("== "+c+" ==");
-  inTown.filter(p=>p.category===c).sort((x,y)=>R(y.id)-R(x.id)).slice(0,12).forEach(p=>console.log(line(p)));
+  inTown.filter(p=>p.category===c).sort((a,b)=>a.name.localeCompare(b.name)).forEach(p=>console.log(line(p)));
 }
 ' 2>&1 | grep -v -iE "warning|reparsing|trace-warnings|module_typeless|es module|performance overhead|eliminate"
 ```
 
-- Prefer well-reviewed, recognizable places; be wary of a 5.0 with three reviews.
+- Pick the recognizable, clearly-described places a concierge would name out loud. If a candidate's own description does not make the case, it does not belong on a customer's short list.
 - **Verify price tiers and any distance/walkability claim from the data**, never assume.
 - For an association, membership belongs in `src/data/memberships.ts`; derive the list from it (`membersOf('oba', 'Oak Bluffs').map(p => p.id)`) rather than hand-listing, so a re-derived roster updates for free.
 - Present the full draft. Let the user approve, swap or cut. **Do not write the record until they approve.**

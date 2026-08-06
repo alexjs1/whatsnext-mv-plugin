@@ -54,7 +54,7 @@ Repo `alexjs1/whats-next-mv`, branch `main`. Pushing to `main` triggers the Netl
      now does, and the stack table if the stack changed).
    Other sessions edit these too, so make **targeted additions to the right
    section, never a blind overwrite**. A pure content edit (one place's hours,
-   the weekly ratings refresh) needs no doc change — use judgment.
+   a new event) needs no doc change — use judgment.
 
 6. **Commit** with a clear message and the standard trailer:
    ```
