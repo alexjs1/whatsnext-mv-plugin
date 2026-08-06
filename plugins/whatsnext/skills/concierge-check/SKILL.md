@@ -20,10 +20,20 @@ $HOME/Documents/mv-guide
 
 ## Step 0 — Run the regression battery (do this first, every time)
 
-`scripts/concierge-battery.json` holds ~91 `{q, expect, notExpect}` cases (grown with every new category — shops, charters, sweets landed July 2026) (a question with a substring its answer must/must-not contain). Run it against the REAL router via the dev-only `window.__askLocal` hook:
+`scripts/concierge-battery.json` holds 132 `{q, expect, notExpect}` cases (a question with a substring its answer must/must-not contain), grown with every new category and every misroute found.
 
-1. `preview_start` (`vineyard-guide-web`, 8081), wait for the bundle, then navigate to `http://localhost:8081` so `__DEV__` is set and the hook is installed. Confirm `typeof window.__askLocal === 'function'`.
-2. In one `javascript_tool` call, `fetch('/concierge-battery.json')` won't work (scripts/ isn't web-served) — instead read the JSON with the Read tool, inline its `cases` into the browser script, and for each call `window.__askLocal(q)` and assert `expect` is present and `notExpect` (if set) is absent, case-insensitive. Return the list of failures.
+> **Use `window.__askOffline`, never `window.__askLocal`.** The router runs
+> `dishAnswer → narrowAnswer → tagAnswer → bestAnswer → localAnswer`, and
+> `__askLocal` jumps straight to the last of those. Running the battery through
+> it tests a path the app rarely reaches: in Aug 2026 it read 119/119 green
+> while the shipping router failed 20 of the same cases, and a guest asking
+> "where can I see a movie" was being answered with "what kind of food are you
+> after?". `__askOffline` is the whole chain minus the AI call. It is **async**
+> — `await` it. (`__askBest`, `__askDish`, `__askTag` isolate one handler when
+> you are diagnosing which one fired.)
+
+1. `preview_start` (`vineyard-guide-web`, 8081), wait for the bundle, then navigate to `http://localhost:8081` so `__DEV__` is set and the hooks are installed. Confirm `typeof window.__askOffline === 'function'`.
+2. In one `javascript_tool` call, `fetch('/concierge-battery.json')` won't work (scripts/ isn't web-served) — instead read the JSON with the Read tool, inline its `cases` into the browser script, and for each `await window.__askOffline(q)` and assert `expect` is present and `notExpect` (if set) is absent, case-insensitive. Return the list of failures.
 3. **Every failure is a misroute or a gap.** Fix per the steps below, then re-run until 0 failures. When you find a NEW misroute not in the battery, ADD a case for it so it can never regress. (Avoid accidental-substring assertions — e.g. never assert absence of "eat", which hides inside "theaters".)
 
 ## Step 1 — Static coverage check
@@ -52,6 +62,10 @@ Start the preview (`preview_start`, `vineyard-guide-web`, 8081), open `/ask`, an
 ## Step 3 — Fix it
 
 **For a routing collision** (the battery's most common failure): the guilty intent is an EARLIER one whose regex matched a word that belongs to another domain. GUARD it — add a negative lookahead so it does NOT fire on the other domain's phrasing (e.g. hiking `&& !/\bbik(e|ing)\b|bicycl|cycling/`, the bars/alcohol intents `&& !/(raw|sushi|oyster|coffee|...) ?bar/`), or tighten a bare word to a word boundary (`where.*\beat\b`, not `where.*eat`). Reordering is a last resort; a guard is safer because it's local.
+
+**For a collision with an EARLY handler** (`narrowAnswer` and `tagAnswer` run before the big keyword engine, so they steal questions from it silently): check the handler's own trigger. `BROAD_DINING` once opened with a bare `where (should|can|do) (i|we|you)` and swallowed every "where can I ..." question in the app. Two rules came out of that: an opener that generic must require a domain word **in the same clause**, and a handler that asks the guest a narrowing question must bail when the guest already named what they want (a dish tag, a diet, kid-friendly, outdoor seating).
+
+**For a town that is being sorted rather than filtered:** a town named in the question is a hard filter. `tagAnswer` ordered by town but never filtered, so "italian in Vineyard Haven" answered with Edgartown. If a handler accepts a town, it must drop everything outside it, and say separately how many sit elsewhere.
 
 **For a coverage gap**, add a dedicated intent, following the existing patterns:
 
