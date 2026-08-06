@@ -65,4 +65,4 @@ If the place needs a category that doesn't exist yet, wire the full chain (missi
 
 Run `/whatsnext:publish`. During the preview check, confirm the new place appears where expected (Guide/Map, and in a relevant concierge question) with no console errors.
 
-> New places have **no Google rating** until the next `/whatsnext:refresh-ratings` run, so they'll show no star and sort after rated places. That's expected.
+> The guide carries no star ratings (removed Aug 2026 — see `DEVELOPMENT.md`), so a new place needs nothing beyond its record: it takes its alphabetical position in the Guide immediately.

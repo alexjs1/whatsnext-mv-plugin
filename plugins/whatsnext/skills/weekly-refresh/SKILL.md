@@ -1,13 +1,13 @@
 ---
 name: weekly-refresh
-description: Run the full weekly maintenance cycle for the What's Next MV guide. Use whenever the user types /whatsnext:weekly-refresh or asks to "do the weekly update", "run the weekly refresh", "weekly guide maintenance", "capture new openings and price changes", "what changed on the island this week", or similar. Sweeps local sources for new, closed, and changed places and events since the last run, proposes adds and edits for approval, refreshes Google ratings, and publishes once.
+description: Run the full weekly maintenance cycle for the What's Next MV guide. Use whenever the user types /whatsnext:weekly-refresh or asks to "do the weekly update", "run the weekly refresh", "weekly guide maintenance", "capture new openings and price changes", "what changed on the island this week", or similar. Sweeps local sources for new, closed, and changed places and events since the last run, proposes adds and edits for approval, and publishes once.
 ---
 
 # Weekly refresh — the whole cycle
 
-The guide is kept current on a weekly cadence in summer (less often off-season, per the in-app "About this guide" note). This skill is that cycle: it catches what changed on the island (new restaurants, closings, relocations, price or season changes, new events) and refreshes ratings, in one consolidated pass ending in a single publish.
+The guide is kept current on a weekly cadence in summer (less often off-season, per the in-app "About this guide" note). This skill is that cycle: it catches what changed on the island (new restaurants, closings, relocations, price or season changes, new events) in one consolidated pass ending in a single publish.
 
-It orchestrates the focused skills rather than duplicating them: `add-place`, `add-event`, `refresh-ratings`, and `publish`.
+It orchestrates the focused skills rather than duplicating them: `add-place`, `add-event`, and `publish`.
 
 ## Project root
 
@@ -17,14 +17,14 @@ $HOME/Documents/mv-guide
 
 ## Order matters
 
-Do the content sweep and apply adds **before** the ratings fetch, so any place added this week gets its Google rating in the same run.
+Do the content sweep and apply adds before publishing, so a week's changes ship together.
 
 ## Step 1 — Figure out the window
 
 Find when the guide was last refreshed so the sweep only looks at what's new:
 
 ```
-git -C "$HOME/Documents/mv-guide" log -1 --format=%cs -- src/data/ratings.ts
+git -C "$HOME/Documents/mv-guide" log -1 --format=%cs -- src/data/places.ts
 git -C "$HOME/Documents/mv-guide" log --oneline -8
 ```
 
@@ -59,19 +59,20 @@ Present a short, grouped list: proposed **adds**, **removals**, and **edits** (w
 
 Do not run `publish` yet — batch everything into one publish at the end.
 
-## Step 5 — Refresh ratings
+## Step 5 — Sweep the what's-on sources for gaps
 
-Now run the ratings fetch (this also picks up the places you just added). The key is in `$HOME/Documents/mv-guide/.env` as `GOOGLE_KEY`.
-
-```
-cd "$HOME/Documents/mv-guide" && GOOGLE_KEY="$(grep -E '^GOOGLE_KEY=' .env | cut -d= -f2)" node scripts/fetch-ratings.mjs
-```
-
-Skim the change: newly-rated places, notable swings, any dropped listing (often a real-world closing worth acting on).
+There is no ratings step any more — Google ratings were removed from the guide in
+Aug 2026 (see `DEVELOPMENT.md` → "Google Maps Platform terms"; do not reinstate
+a ratings pull). Use the slot for coverage instead: skim MV Online
+(https://mvol.com/events/, which also carries a business directory) and the MV
+Times' Things to Do (https://www.mvtimes.com/things-to-do). A business or event
+they carry that the guide does not is a hole worth filling — feed anything found
+back through Step 3. MVacay (https://www.mvacay.com) is a third research source,
+but is never cited to guests.
 
 ## Step 6 — Publish once
 
-Run `/whatsnext:publish`. The commit message should summarize the week: N added, N removed/edited, ratings refreshed. Verify in the preview that a couple of the changes render and there are no console errors.
+Run `/whatsnext:publish`. The commit message should summarize the week: N added, N removed/edited. Verify in the preview that a couple of the changes render and there are no console errors.
 
 ## Off-season
 

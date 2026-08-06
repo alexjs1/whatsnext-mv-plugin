@@ -14,10 +14,9 @@ Invoke any skill as `/whatsnext:<skill>`.
 | Skill | Purpose |
 |---|---|
 | `/whatsnext:start` | Front door. Reports guide state and routes to the right skill. |
-| `/whatsnext:weekly-refresh` | The weekly cycle: new/closed/changed places + events, ratings, publish. |
+| `/whatsnext:weekly-refresh` | The weekly cycle: new/closed/changed places + events, publish. |
 | `/whatsnext:add-place` | Add a place: verify, geocode, write the record, publish. |
 | `/whatsnext:add-event` | Add an event to the calendar. |
-| `/whatsnext:refresh-ratings` | Google-ratings-only refresh. |
 | `/whatsnext:audit-descriptions` | Accuracy sweep of place descriptions against real sources. |
 | `/whatsnext:concierge-check` | Find gaps in the offline concierge's coverage. |
 | `/whatsnext:research-tag` | Research a hand-curated menu filter (ribs, vegan, vegetarian, gluten-free). |
@@ -28,7 +27,7 @@ Invoke any skill as `/whatsnext:<skill>`.
 | Skill | Purpose |
 |---|---|
 | `/whatsnext:feature-place` | Feature a business (top ranking + gold map star + custom description). |
-| `/whatsnext:feature-to-top` | Just the top-of-category ranking + "Featured" tag. |
+| `/whatsnext:feature-to-top` | Just the Featured section + "Featured" tag. |
 | `/whatsnext:feature-star` | Just the gold star on the map. |
 | `/whatsnext:customize-description` | Just a custom description (≤250 chars). |
 

@@ -35,7 +35,7 @@ Spot-check `seasonal` fields on places whose season is time-sensitive (a place t
 
 ## Step 4 — Ratings
 
-Seasonal reopenings change Google listings, so run `/whatsnext:refresh-ratings` as part of the seasonal pass.
+Seasonal reopenings and closings are exactly what the seasonal pass is for; there is no ratings step (Google ratings were removed in Aug 2026 — see `DEVELOPMENT.md`).
 
 ## Step 5 — Publish
 

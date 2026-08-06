@@ -1,6 +1,6 @@
 ---
 name: start
-description: What's Next MV concierge — reports the current state of the guide app and routes to the right child skill. Use whenever the user types /whatsnext:start or asks "what's the state of the guide", "what should I do for What's Next MV", "where are we with the app", "give me the guide status", "anything pending for the MV app", or similar open-ended questions about the What's Next MV project. Also use when the user makes a natural-language maintenance request without naming a skill — e.g., "add the new taco place in Oak Bluffs", "refresh the ratings", "the street fair date changed" — and route to /whatsnext:add-place, /whatsnext:refresh-ratings, /whatsnext:add-event, etc. Do not use for the focused single-purpose skills below; those have their own triggers.
+description: What's Next MV concierge — reports the current state of the guide app and routes to the right child skill. Use whenever the user types /whatsnext:start or asks "what's the state of the guide", "what should I do for What's Next MV", "where are we with the app", "give me the guide status", "anything pending for the MV app", or similar open-ended questions about the What's Next MV project. Also use when the user makes a natural-language maintenance request without naming a skill — e.g., "add the new taco place in Oak Bluffs", "the street fair date changed" — and route to /whatsnext:add-place, /whatsnext:add-event, etc. Do not use for the focused single-purpose skills below; those have their own triggers.
 ---
 
 # What's Next MV concierge
@@ -19,10 +19,9 @@ Repo `alexjs1/whats-next-mv`, branch `main` → auto-deploys to whatsnextmv.netl
 
 | Skill | What it does |
 |---|---|
-| `/whatsnext:weekly-refresh` | The weekly cycle: sweep for new/closed/changed places + events, refresh ratings, publish |
+| `/whatsnext:weekly-refresh` | The weekly cycle: sweep for new/closed/changed places + events, publish |
 | `/whatsnext:add-place` | Add a place: verify, geocode, write the record, publish |
 | `/whatsnext:add-event` | Add an event to the calendar |
-| `/whatsnext:refresh-ratings` | Google-ratings-only refresh (the mechanical part of the weekly cycle) |
 | `/whatsnext:audit-descriptions` | Accuracy sweep of descriptions vs. real sources |
 | `/whatsnext:concierge-check` | Find gaps in the offline concierge's coverage |
 | `/whatsnext:seasonal-refresh` | Roll event dates to the new year; re-check seasonal windows |
@@ -32,7 +31,7 @@ Repo `alexjs1/whats-next-mv`, branch `main` → auto-deploys to whatsnextmv.netl
 | `/whatsnext:customize-description` | Just a custom description (≤250 chars) |
 | `/whatsnext:publish` | Typecheck, export, verify, commit, push |
 
-The default weekly action is `/whatsnext:weekly-refresh`. If uncommitted work or a stale `ratings.ts` is sitting around, or it's been about a week, suggest it.
+The default weekly action is `/whatsnext:weekly-refresh`. If uncommitted work is sitting around, or it's been about a week, suggest it.
 
 ## Step 1 — Inspect state
 
@@ -49,7 +48,7 @@ Report the current content counts:
 cd "$HOME/Documents/mv-guide" && node --input-type=module -e "import('./src/data/places.ts').then(m=>{const P=m.PLACES;const byCat={};for(const p of P)byCat[p.category]=(byCat[p.category]||0)+1;console.log('places:',P.length);console.log(byCat);})"
 ```
 
-Note anything worth flagging: uncommitted changes, how long since the last `ratings.ts` refresh (`git log -1 --format=%cr -- src/data/ratings.ts`), whether it's near a season/year boundary (events dates rolling over).
+Note anything worth flagging: uncommitted changes, how long since the guide data last changed (`git log -1 --format=%cr -- src/data/places.ts`), whether it's near a season/year boundary (events dates rolling over).
 
 ## Step 2 — Route
 

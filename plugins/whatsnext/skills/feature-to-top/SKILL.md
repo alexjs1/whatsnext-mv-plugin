@@ -5,7 +5,16 @@ description: Make a place show first in its category in the What's Next MV guide
 
 # Feature a place to the top of results
 
-Sets the `priority` flag on a place. A priority place sorts **first within its category** in the Guide and leads the concierge's answers for that category, and it shows a gold "Featured" tag on the row, card, and detail page.
+Sets the `priority` flag on a place. A priority place gets the paid position: it
+appears in its own **Featured** section at the top of the Guide, still appears in
+its own category below (a paid position, not a replacement for the organic one),
+leads the concierge's answers for that category, and carries a gold "Featured"
+tag on the row, card, and detail page wherever it is seen.
+
+Since Google ratings were removed in Aug 2026 this is the ONLY way to reach the
+top of a list — everything else is alphabetical — which is what makes the
+sponsorship worth selling. The Featured section is built only when a sponsored
+place matches the current filters, so there is never an empty header.
 
 ## Project root
 
@@ -13,7 +22,7 @@ Sets the `priority` flag on a place. A priority place sorts **first within its c
 $HOME/Documents/mv-guide
 ```
 
-The app already implements the behavior (priority-first sorting + the Featured tag). This skill just toggles the flag on the place record.
+The app already implements the behavior (the Featured section + priority-first sorting + the Featured tag). This skill just toggles the flag on the place record.
 
 ## Step 1 — Find the place
 
