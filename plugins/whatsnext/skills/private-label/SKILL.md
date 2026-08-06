@@ -19,7 +19,7 @@ When a partner is active the app:
 - opens on a splash with the partner's **logo, name, font, and colors** over "Mobile Concierge";
 - carries a **"Contact <partner>" credit on every tab** (the sponsor slot, repurposed) that offers call / website / email;
 - can add an **Info subtab** for a lodging partner's guest information;
-- **removes all other lodging** — but only when `hidesOtherLodging` is left at its default. An association MUST set it `false`;
+- **removes all other lodging** — but only when `hidesOtherLodging` is left at its default, which is right for a resort property and wrong for everyone else. Step 1 asks which this is; do not assume;
 - adds a **second tab** (Map | Favorites | Guide | Info | Ask) listing the partner's businesses, grouped by category, each opening the normal place-detail page. Rename it with `favoritesLabel` / `favoritesTitle` / `favoritesBlurb`.
 
 The partner's picks live in that tab — a curated subset of the Guide — rather than being boosted to the top of every list (that older ranking approach was removed as too fragile). The regular Guide/Map/concierge sort normally.
@@ -58,7 +58,7 @@ Resolve coordinates with a script that writes a review file and never edits data
 
 **Menu real estate is the scarce resource.** Every row competes with the ask box below it. Before adding a section, check whether it belongs *inside* an existing one — the Heritage Trail ended up nested in the walking tours for exactly this reason. `emphasis: 'filled'` draws one row as a solid button so a utility item reads as different in kind; use it once, or it stops meaning anything.
 
-**Section blurbs are optional and usually not worth it.** A `blurb` under each label reads well with three or four sections and pushes an eight-item menu off the screen. Dropping them also stops long labels wrapping. Prefer a label that stands on its own.
+**Write a `blurb` for each section, then drop them if the menu will not fit.** A one-line blurb under each label genuinely helps — it tells a visitor what a section holds before they spend a tap on it — and at three or five sections there is room for them. They become the thing to cut only when the menu outgrows a phone screen: seven blurbs cost more vertical space than an eighth section, and removing them also stops long labels wrapping. So offer them by default, show the user the menu at 375px, and cut them together if it overflows. Never silently.
 
 **Accordions wherever the content allows.** Phones read them far better than long pages, and `prose` chapters plus `places` groups both collapse by default.
 
@@ -128,7 +128,9 @@ Ask the user for (offer to proceed with sensible placeholders for anything they 
 6. **The menu** — which sections, in what order, in whose words. See "The custom menu is the partner's" above. This is the bulk of the work; write real content, not placeholders, and use `comingSoon` for anything genuinely not ready.
 7. **Their businesses** — the places they recommend, or (for an association) their members. Find each `id` in `src/data/*.ts` and confirm it resolves — **verify every id programmatically before you finish**, a typo silently renders nothing. Association membership belongs in `src/data/memberships.ts`; derive `preferredPlaceIds` from it (`membersOf('oba', 'Oak Bluffs').map(p => p.id)`) rather than hand-listing, so a re-derived roster updates the tab for free.
 8. **Is the partner itself a listed place?** If it has a guide record, set `placeId` so it survives the lodging cull and pins first.
-9. **Does it sell rooms?** If not, set **`hidesOtherLodging: false`** and check the copy that assumes guests: `welcomeBlurb` (splash card), `favoritesTitle` / `favoritesBlurb` (second tab). The defaults all say "your stay".
+9. **ASK: is this edition for a resort property — a hotel or an inn?** Do not infer it from the partner's name or from the fact that they have rooms; ask outright, because the answer decides whether **competing lodging is hidden**, and both ways of getting it wrong are bad. A hotel that lists rival inns is advertising its competitors. An association or chamber whose inns vanish has deleted paying members from its own map, and their rows in the members tab open nothing.
+   - **Yes, a resort property** → leave `hidesOtherLodging` at its default (true). Set `placeId` if the property has its own guide record, so it survives the cull and pins first.
+   - **No** → set **`hidesOtherLodging: false`**, and fix the copy that assumes guests: `welcomeBlurb` (splash card), `favoritesTitle` / `favoritesBlurb` (second tab). The defaults all say "your stay" or "places we love".
 
 ## Step 2 — Write the Partner record
 
