@@ -22,15 +22,25 @@ $HOME/Documents/mv-guide
 
 `scripts/concierge-battery.json` holds 132 `{q, expect, notExpect}` cases (a question with a substring its answer must/must-not contain), grown with every new category and every misroute found.
 
-> **Use `window.__askOffline`, never `window.__askLocal`.** The router runs
-> `dishAnswer → narrowAnswer → tagAnswer → bestAnswer → localAnswer`, and
-> `__askLocal` jumps straight to the last of those. Running the battery through
-> it tests a path the app rarely reaches: in Aug 2026 it read 119/119 green
-> while the shipping router failed 20 of the same cases, and a guest asking
-> "where can I see a movie" was being answered with "what kind of food are you
-> after?". `__askOffline` is the whole chain minus the AI call. It is **async**
-> — `await` it. (`__askBest`, `__askDish`, `__askTag` isolate one handler when
-> you are diagnosing which one fired.)
+> **The AI answers first (Aug 2026).** `ask()` calls the endpoint before any
+> rule runs. What this battery tests is `offlineAnswer()` — the fallback a guest
+> gets with no signal, no key, or a failed request — which runs
+> `dishAnswer → narrowAnswer → tagAnswer → bestAnswer → localAnswer`. It still
+> has to be right: it is also what seeds `retrieveForAI`, the candidate places
+> the model is handed, so a bad rule degrades the AI answer too.
+>
+> **Use `window.__askOffline`, never `window.__askLocal`.** `__askLocal` jumps
+> straight to the LAST handler in that chain, so it tests a path the app rarely
+> reaches: in Aug 2026 it read 119/119 green while the real chain failed 20 of
+> the same cases, and a guest asking "where can I see a movie" was answered with
+> "what kind of food are you after?". `__askOffline` is the whole chain. It is
+> **async** — `await` it. (`__askBest`, `__askDish`, `__askTag` isolate one
+> handler when you are diagnosing which fired.)
+>
+> **A behaviour the rules used to guarantee now needs a prompt rule too**, since
+> the rule no longer runs first. Both live in `netlify/functions/ask.mjs`: ask
+> ONE narrowing question when the ask is broad, and treat a named town as a
+> filter rather than a sort. Change one, check the other.
 
 1. `preview_start` (`vineyard-guide-web`, 8081), wait for the bundle, then navigate to `http://localhost:8081` so `__DEV__` is set and the hooks are installed. Confirm `typeof window.__askOffline === 'function'`.
 2. In one `javascript_tool` call, `fetch('/concierge-battery.json')` won't work (scripts/ isn't web-served) — instead read the JSON with the Read tool, inline its `cases` into the browser script, and for each `await window.__askOffline(q)` and assert `expect` is present and `notExpect` (if set) is absent, case-insensitive. Return the list of failures.
