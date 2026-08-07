@@ -37,11 +37,17 @@ private-label edition the app hides **every mark of a featured listing**:
 - the gold **star on the map** (`showsFeaturedStar()` in `src/lib/partner.ts`,
   used by both `IslandMap.tsx` and `IslandMap.web.tsx`).
 
-The featured places themselves **still appear**, in their ordinary category and
-alphabetical spot. Nothing is removed from the guide — only the badging. If you
-add a new surface that advertises a sponsorship, gate it the same way, and check
-it in a partner edition before shipping: load `/?partner=<slug>` and confirm the
-badge is gone, then `/?partner=none` and confirm the base app still shows it.
+The featured places themselves **still appear**, in their ordinary category.
+Nothing is removed from the guide — only the badging. If you add a new surface
+that advertises a sponsorship, gate it the same way, and check it in a partner
+edition before shipping: load `/?partner=<slug>` and confirm the badge is gone,
+then `/?partner=none` and confirm the base app still shows it.
+
+**The ordering boost stays.** A featured place still sorts first within its
+category in a private-label edition — asked and answered (Alex, Aug 2026). The
+rule is about not advertising WNMV's sponsors on someone else's brand, not about
+demoting them, and with no badge the guest sees nothing either way. Leave
+`sortPlaces` alone.
 
 ## The menu is the customer's. Do not invent it.
 
