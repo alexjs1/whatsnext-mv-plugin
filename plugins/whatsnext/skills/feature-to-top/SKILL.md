@@ -16,6 +16,12 @@ top of a list — everything else is alphabetical — which is what makes the
 sponsorship worth selling. The Featured section is built only when a sponsored
 place matches the current filters, so there is never an empty header.
 
+> **The base app only.** Private-label editions hide the Featured section, the
+> pill and the map star: a customer's guests are not shown WNMV's sponsors
+> inside the customer's own app. The place still appears there, unbadged. Say so
+> when quoting reach — a sponsor's placement is seen on whatsnextmv.com, not in
+> the hotel and association editions. See `/whatsnext:private-label`.
+
 ## Project root
 
 ```

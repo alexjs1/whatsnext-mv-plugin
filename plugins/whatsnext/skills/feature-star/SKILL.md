@@ -31,3 +31,8 @@ grep -rn "name: '<place name>'" "$HOME/Documents/mv-guide/src/data/"
 Run `/whatsnext:publish`. In the preview, open the Map (whole-island view) and confirm the place shows a gold star that stays visible even where nearby points cluster into azure bubbles.
 
 > The star is map-only. Top ranking and the "Featured" tag are a separate perk — see `/whatsnext:feature-to-top`.
+
+> The star is also **base-app only**: private-label editions draw the place's
+> ordinary category marker instead, so a customer's guests never see WNMV's
+> sponsors inside the customer's own app (`showsFeaturedStar()` in
+> `src/lib/partner.ts`). See `/whatsnext:private-label`.

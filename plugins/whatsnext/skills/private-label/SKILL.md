@@ -19,9 +19,29 @@ Regardless of customer, an edition:
 - carries the customer's **mark in two places** (top of the menu, top right of every other screen), both opening the same actions;
 - sits on top of the **full WNMV map, Guide and AI concierge**, which a visitor can always reach;
 - offers a **"Download the app"** route that always works;
-- **reports its own analytics**, tagged `edition = pl:<slug>`.
+- **reports its own analytics**, tagged `edition = pl:<slug>`;
+- **shows none of What's Next MV's sponsorships** (see below).
 
 With no partner active the base app is byte-for-byte unchanged. This is purely additive.
+
+### No WNMV sponsorships inside a customer's edition
+
+Alex's rule (Aug 2026): a hotel or association hands this app to its own guests,
+so selling someone else's paid placement on the customer's brand is not on. In a
+private-label edition the app hides **every mark of a featured listing**:
+
+- the gold **Featured section** at the top of the Guide (`explore.tsx`);
+- the gold **"Featured" pill** on the Guide row, place card and place page
+  (`FeaturedTag` in `src/components/Rating.tsx` returns null when a partner is
+  active, which covers all three at once);
+- the gold **star on the map** (`showsFeaturedStar()` in `src/lib/partner.ts`,
+  used by both `IslandMap.tsx` and `IslandMap.web.tsx`).
+
+The featured places themselves **still appear**, in their ordinary category and
+alphabetical spot. Nothing is removed from the guide — only the badging. If you
+add a new surface that advertises a sponsorship, gate it the same way, and check
+it in a partner edition before shipping: load `/?partner=<slug>` and confirm the
+badge is gone, then `/?partner=none` and confirm the base app still shows it.
 
 ## The menu is the customer's. Do not invent it.
 

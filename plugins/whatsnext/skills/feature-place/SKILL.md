@@ -11,6 +11,12 @@ The one-shot version of the three featured perks. Applies them together so a pay
 2. **Gold map star** — `starMarker: true` (a distinctive, always-visible star on the map).
 3. **Custom description** — the business's own copy (optional; only if provided).
 
+> Perks 1 and 2 are **base-app only**: private-label editions hide the Featured
+> section, the pill and the map star, so a customer's guests never see WNMV's
+> sponsors inside the customer's own app. The place still appears there,
+> unbadged, and the custom description still applies. See
+> `/whatsnext:private-label`.
+
 ## Project root
 
 ```
