@@ -138,14 +138,15 @@ slug, e.g. `PUSH_ADMIN_TOKEN_SALTWIND`) for a site with its own token, otherwise
 shared `PUSH_ADMIN_TOKEN` (the four push variables set once at Netlify team level,
 inherited by every site — the normal arrangement). Use the per-site one if both exist.
 If neither is there, the edition's push is not set up — see `/whatsnext:private-label`
-Step 4b — and stop here. In the commands below, `$TOKEN` means whichever applies.
+Step 4b — and stop here. Read it with `sed` as below — never `source .env` (other lines in it are not shell-safe) and never print the token.
 
 1. Draft the notification from the live offer and confirm it with the user:
    **title** = the property's name (≤ 80 chars), **body** = the offer's `summary`
    (≤ 240 chars). The link is `/?offers=1` unless they say otherwise.
 2. Count the audience first with a dry run, and tell the user the number:
    ```
-   set -a; source "$HOME/Documents/mv-guide/.env"; set +a
+   TOKEN=$(sed -n 's/^PUSH_ADMIN_TOKEN_<SLUG>=//p' "$HOME/Documents/mv-guide/.env" | head -1)
+   [ -n "$TOKEN" ] || TOKEN=$(sed -n 's/^PUSH_ADMIN_TOKEN=//p' "$HOME/Documents/mv-guide/.env" | head -1)
    curl -s -X POST "https://<slug>-concierge.netlify.app/.netlify/functions/push-send" \
      -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
      -d '{"title":"<title>","body":"<body>","url":"/?offers=1","dryRun":true}'
@@ -162,7 +163,8 @@ opt-in report (`?sends=1`).
 Same token. JSON, or a CSV the owner can open:
 
 ```
-set -a; source "$HOME/Documents/mv-guide/.env"; set +a
+TOKEN=$(sed -n 's/^PUSH_ADMIN_TOKEN_<SLUG>=//p' "$HOME/Documents/mv-guide/.env" | head -1)
+[ -n "$TOKEN" ] || TOKEN=$(sed -n 's/^PUSH_ADMIN_TOKEN=//p' "$HOME/Documents/mv-guide/.env" | head -1)
 curl -s "https://<slug>-concierge.netlify.app/.netlify/functions/push-subscribers?format=csv" \
   -H "Authorization: Bearer $TOKEN" -o "<property> opt-ins $(date +%F).csv"
 ```
