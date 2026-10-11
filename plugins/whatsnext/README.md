@@ -36,6 +36,7 @@ Invoke any skill as `/whatsnext:<skill>`.
 | Skill | Purpose |
 |---|---|
 | `/whatsnext:private-label` | A customer's own edition of the app, end to end: their branding, their custom menu, its own web address. |
+| `/whatsnext:offer` | An offer to the edition's past guests (e.g. rebook next summer at a returning-guest rate): interview, write, verify, publish. Shows between the dates set and switches off by itself. |
 
 An edition lives at **its own web address** (`<slug>-concierge.netlify.app`), on its own
 Netlify site built from the same repo. That is what stops editions colliding with the
