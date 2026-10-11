@@ -277,15 +277,46 @@ The Netlify site cannot be created from the repo. Offer these steps and wait:
 - A site-level variable **overrides** a shared one of the same name, so don't add one "to be safe".
 - **No Gemini key is needed.** The concierge endpoint is absolute (`extra.askEndpoint`), so every edition inherits one key. The copy of `ask.mjs` on an edition's site is never called.
 
+## Step 4b — Turn on offer notifications for the new site
+
+Every edition can run offers to past guests (`/whatsnext:offer`) with a phone
+notification. That needs four variables on the edition's site (or shared at team level
+so new sites inherit them — check `Team settings → Environment variables` first):
+
+| Variable | Value |
+|---|---|
+| `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | One key pair serves every edition (reuse the one in `.env`). |
+| `VAPID_SUBJECT` | `mailto:islandanalyticsmv@gmail.com` |
+| `PUSH_ADMIN_TOKEN` | A fresh random secret **per site**. It authorises sending and listing opt-ins for that property only. |
+
+**The secrets must not pass through Claude.** Have the user run this in their own
+terminal (the Terminal panel, or `run_in_terminal`), never through Bash, so the
+values print only to them:
+
+```
+cd "$HOME/Documents/mv-guide" && node scripts/setup-push.mjs <slug> --reuse-keys
+```
+
+It generates what is missing, records `VAPID_*` and `PUSH_ADMIN_TOKEN_<SLUG>` in
+the gitignored `.env` (which is how `/whatsnext:offer` finds the token), and prints
+the four variables for the user to paste into the site's **Environment variables**
+(scope Functions; mark the private key and token secret). Do not read `.env` back,
+and do not set the variables through the Netlify connector — that would put the
+values in the transcript.
+
+Without these the edition still works; the opt-in row simply never appears.
+Variables take effect on the next deploy.
+
 Then verify from outside:
 
 ```
 curl -s https://<slug>-concierge.netlify.app/ | grep -o '<title>[^<]*</title>'
+curl -s https://<slug>-concierge.netlify.app/.netlify/functions/push-config
 curl -s -X POST -H 'Content-Type: application/json' -d '{"events":[]}' \
   https://<slug>-concierge.netlify.app/.netlify/functions/log-event
 ```
 
-The title should be the customer's. The log call should answer `Provide 1-500 events` — `no database configured` means the analytics variable is not reaching the function.
+The title should be the customer's. The log call should answer `Provide 1-500 events` — `no database configured` means the analytics variable is not reaching the function. `push-config` should return a `publicKey` (not `null`) once Step 4b is done and the site has redeployed.
 
 # Step 5 — Publish
 

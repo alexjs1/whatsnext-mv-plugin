@@ -1,6 +1,6 @@
 ---
 name: offer
-description: Set up, change, or cancel the offer to past guests in a private-label (Pocket Concierge) edition of What's Next MV — for example a January invitation to rebook next summer at a returning-guest rate. Use whenever the user types /whatsnext:offer or asks to "add an offer", "set up a returning-guest offer", "run a winter promotion for <hotel>", "change the discount", "extend the booking deadline", "what offer is live", "cancel the offer", "turn off the promotion", or similar. Interview-style: one offer active at a time; asks what the offer is and when it applies, writes the record, verifies in the preview, and publishes. Offers switch off by themselves on their book-by date.
+description: Set up, change, or cancel the offer to past guests in a private-label (Pocket Concierge) edition of What's Next MV — for example a January invitation to rebook next summer at a returning-guest rate — and send the phone notification for it or list who opted in. Use whenever the user types /whatsnext:offer or asks to "add an offer", "set up a returning-guest offer", "run a winter promotion for <hotel>", "change the discount", "extend the booking deadline", "what offer is live", "cancel the offer", "send the notification", "push the offer to guests", "who opted in", "export the opt-ins for <hotel>", or similar. Interview-style: one offer active at a time; asks what the offer is and when it applies, writes the record, verifies in the preview, and publishes. Offers switch off by themselves on their book-by date.
 ---
 
 # The offer to past guests
@@ -36,6 +36,10 @@ own colors and typeface.
   the public What's Next MV.
 - **Measured.** `offer_open`, `offer_view` and `offer_book` land in the analytics log,
   tagged with the edition and the offer id.
+- **Notified.** Guests opt in on the front door ("Get next-season offers from <hotel>",
+  optional name and email). Each edition's opt-ins live on its own Netlify site. The
+  notification is sent on request (Step 6) and opens the app at `?offers=1`. Reach is
+  installs × opt-ins, so the property's own email should carry the same link.
 
 ## Step 1 — The one opening question
 
@@ -48,10 +52,13 @@ otherwise **live**. An offer that is live or scheduled is the *current* offer.
 Ask exactly one question, and nothing before it — no status dump, no field list:
 
 - **If there is a current offer:** "The current offer is *<headline>* (<tiers>, book by
-  <date>, live now / starts <date>). Do you want to **change** it, **cancel** it, or
-  **set up a new offer** to replace it?"
-- **If there is none:** do not ask. Say "No offer is set up for <edition>; let's create
-  one." and go straight to Step 2.
+  <date>, live now / starts <date>). Do you want to **change** it, **cancel** it,
+  **set up a new offer** to replace it, **send the notification** for it, or see
+  **who opted in**?"
+- **If there is none:** offer only **set up an offer** or **who opted in** (there is
+  nothing to change, cancel or send). If the user already said which, skip the question.
+
+Sending and the opt-in list are Steps 6 and 7; they need no code or data change.
 
 Then:
 
@@ -121,4 +128,43 @@ Then run `/whatsnext:publish`. Mention the edition and offer id in the commit me
 
 State the dates back one more time ("live now, gone the morning of March 2"), and give
 them the link for the notification or email: the edition's address with `?offers=1`,
-e.g. `https://saltwind-concierge.netlify.app/?offers=1`.
+e.g. `https://saltwind-concierge.netlify.app/?offers=1`. Offer to send the
+notification now (Step 6) if the offer is live.
+
+## Step 6 — Send the notification
+
+The token lives in the app's local `.env` as `PUSH_ADMIN_TOKEN_<SLUG>` (upper-case
+slug, e.g. `PUSH_ADMIN_TOKEN_SALTWIND`). If it is missing, the edition's push is not
+set up — see `/whatsnext:private-label` Step 4b — and stop here.
+
+1. Draft the notification from the live offer and confirm it with the user:
+   **title** = the property's name (≤ 80 chars), **body** = the offer's `summary`
+   (≤ 240 chars). The link is `/?offers=1` unless they say otherwise.
+2. Count the audience first with a dry run, and tell the user the number:
+   ```
+   set -a; source "$HOME/Documents/mv-guide/.env"; set +a
+   curl -s -X POST "https://<slug>-concierge.netlify.app/.netlify/functions/push-send" \
+     -H "Authorization: Bearer $PUSH_ADMIN_TOKEN_<SLUG>" -H 'Content-Type: application/json' \
+     -d '{"title":"<title>","body":"<body>","url":"/?offers=1","dryRun":true}'
+   ```
+3. **Ask for an explicit go** — this reaches real phones and cannot be recalled — then
+   run the same call without `dryRun`. Report `sent`, `failed` and `pruned`
+   (subscriptions whose phone no longer exists; they are removed automatically).
+
+Never send twice for the same offer unless the user asks; the send history is in the
+opt-in report (`?sends=1`).
+
+## Step 7 — Who opted in
+
+Same token. JSON, or a CSV the owner can open:
+
+```
+set -a; source "$HOME/Documents/mv-guide/.env"; set +a
+curl -s "https://<slug>-concierge.netlify.app/.netlify/functions/push-subscribers?format=csv" \
+  -H "Authorization: Bearer $PUSH_ADMIN_TOKEN_<SLUG>" -o "<property> opt-ins $(date +%F).csv"
+```
+
+Save it where the user asks (the property's folder in Google Drive is the usual place)
+and summarise: how many opted in, how many left a name or email, by platform. Names
+and emails are the guests' personal data: hand the file to the property, do not paste
+the list into chat.
