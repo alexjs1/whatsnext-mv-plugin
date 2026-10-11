@@ -133,9 +133,12 @@ notification now (Step 6) if the offer is live.
 
 ## Step 6 — Send the notification
 
-The token lives in the app's local `.env` as `PUSH_ADMIN_TOKEN_<SLUG>` (upper-case
-slug, e.g. `PUSH_ADMIN_TOKEN_SALTWIND`). If it is missing, the edition's push is not
-set up — see `/whatsnext:private-label` Step 4b — and stop here.
+The token lives in the app's local `.env`: `PUSH_ADMIN_TOKEN_<SLUG>` (upper-case
+slug, e.g. `PUSH_ADMIN_TOKEN_SALTWIND`) for a site with its own token, otherwise the
+shared `PUSH_ADMIN_TOKEN` (the four push variables set once at Netlify team level,
+inherited by every site — the normal arrangement). Use the per-site one if both exist.
+If neither is there, the edition's push is not set up — see `/whatsnext:private-label`
+Step 4b — and stop here. In the commands below, `$TOKEN` means whichever applies.
 
 1. Draft the notification from the live offer and confirm it with the user:
    **title** = the property's name (≤ 80 chars), **body** = the offer's `summary`
@@ -144,7 +147,7 @@ set up — see `/whatsnext:private-label` Step 4b — and stop here.
    ```
    set -a; source "$HOME/Documents/mv-guide/.env"; set +a
    curl -s -X POST "https://<slug>-concierge.netlify.app/.netlify/functions/push-send" \
-     -H "Authorization: Bearer $PUSH_ADMIN_TOKEN_<SLUG>" -H 'Content-Type: application/json' \
+     -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
      -d '{"title":"<title>","body":"<body>","url":"/?offers=1","dryRun":true}'
    ```
 3. **Ask for an explicit go** — this reaches real phones and cannot be recalled — then
@@ -161,7 +164,7 @@ Same token. JSON, or a CSV the owner can open:
 ```
 set -a; source "$HOME/Documents/mv-guide/.env"; set +a
 curl -s "https://<slug>-concierge.netlify.app/.netlify/functions/push-subscribers?format=csv" \
-  -H "Authorization: Bearer $PUSH_ADMIN_TOKEN_<SLUG>" -o "<property> opt-ins $(date +%F).csv"
+  -H "Authorization: Bearer $TOKEN" -o "<property> opt-ins $(date +%F).csv"
 ```
 
 Save it where the user asks (the property's folder in Google Drive is the usual place)

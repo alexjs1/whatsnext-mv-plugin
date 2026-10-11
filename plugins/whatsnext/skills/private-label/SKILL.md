@@ -280,8 +280,16 @@ The Netlify site cannot be created from the repo. Offer these steps and wait:
 ## Step 4b — Turn on offer notifications for the new site
 
 Every edition can run offers to past guests (`/whatsnext:offer`) with a phone
-notification. That needs four variables on the edition's site (or shared at team level
-so new sites inherit them — check `Team settings → Environment variables` first):
+notification. That needs four variables. **The normal arrangement is that they are
+shared at Netlify team level** (Team settings → Environment variables), inherited by
+every site, with the token recorded in the app's `.env` as `PUSH_ADMIN_TOKEN` — then a
+new site needs NOTHING here. Check the team variables first (the Netlify connector's
+`get-team-env-vars` lists names; do not echo values) and skip the rest of this step
+if `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` and `PUSH_ADMIN_TOKEN` are
+there.
+
+Only when a property must have its own token (its owner gets direct access, say) set
+the variables on that site instead; a site-level value overrides the shared one:
 
 | Variable | Value |
 |---|---|
