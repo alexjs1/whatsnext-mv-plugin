@@ -59,6 +59,7 @@ What IS fixed is how the menu behaves:
 - One entry is **"Download the app"**.
 - Below the entries sits an **"or" divider and a line about the AI concierge**, over the ask box.
 - The customer's **logo sits above the entries** with the same tap actions as the top-right mark.
+- **Every place the menu mentions is automatically in the Favorites tab.** Favorites is the union of the menu's places and `preferredPlaceIds`, so keep the menu short (the walkable handful) and put the wider list — other towns, partner businesses — in `preferredPlaceIds`. Repeating a menu id there is harmless; do it only when that place should also rank first in its Guide category (`preferredPlaceIds` drives that boost, the menu does not).
 
 ---
 
