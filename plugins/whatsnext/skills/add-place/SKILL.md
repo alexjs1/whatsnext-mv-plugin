@@ -65,4 +65,4 @@ If the place needs a category that doesn't exist yet, wire the full chain (missi
 
 Run `/whatsnext:publish`. During the preview check, confirm the new place appears where expected (Guide/Map, and in a relevant concierge question) with no console errors.
 
-> The guide carries no star ratings (removed Aug 2026 — see `DEVELOPMENT.md`), so a new place needs nothing beyond its record: it takes its alphabetical position in the Guide immediately.
+> The guide carries no star ratings (removed Aug 2026 — see `DEVELOPMENT.md`), so a new place needs nothing beyond its record: it takes its alphabetical position in the Guide immediately. It gets its open/closed check on the next `/whatsnext:refresh-status` run (part of the weekly refresh); until then it shows no closed pill, the right default for a place you just verified.

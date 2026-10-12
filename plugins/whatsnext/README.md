@@ -14,7 +14,8 @@ Invoke any skill as `/whatsnext:<skill>`.
 | Skill | Purpose |
 |---|---|
 | `/whatsnext:start` | Front door. Reports guide state and routes to the right skill. |
-| `/whatsnext:weekly-refresh` | The weekly cycle: new/closed/changed places + events, publish. |
+| `/whatsnext:weekly-refresh` | The weekly cycle: new/closed/changed places + events, open/closed status, publish. |
+| `/whatsnext:refresh-status` | Open/closed status refresh from Google (the red "Temporarily closed" pill). |
 | `/whatsnext:add-place` | Add a place: verify, geocode, write the record, publish. |
 | `/whatsnext:add-event` | Add an event to the calendar. |
 | `/whatsnext:audit-descriptions` | Accuracy sweep of place descriptions against real sources. |

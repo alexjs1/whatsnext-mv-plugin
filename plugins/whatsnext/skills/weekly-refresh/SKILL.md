@@ -1,13 +1,13 @@
 ---
 name: weekly-refresh
-description: Run the full weekly maintenance cycle for the What's Next MV guide. Use whenever the user types /whatsnext:weekly-refresh or asks to "do the weekly update", "run the weekly refresh", "weekly guide maintenance", "capture new openings and price changes", "what changed on the island this week", or similar. Sweeps local sources for new, closed, and changed places and events since the last run, proposes adds and edits for approval, and publishes once.
+description: Run the full weekly maintenance cycle for the What's Next MV guide. Use whenever the user types /whatsnext:weekly-refresh or asks to "do the weekly update", "run the weekly refresh", "weekly guide maintenance", "capture new openings and price changes", "what changed on the island this week", or similar. Sweeps local sources for new, closed, and changed places and events since the last run, proposes adds and edits for approval, refreshes each place's open/closed status from Google, and publishes once.
 ---
 
 # Weekly refresh — the whole cycle
 
-The guide is kept current on a weekly cadence in summer (less often off-season, per the in-app "About this guide" note). This skill is that cycle: it catches what changed on the island (new restaurants, closings, relocations, price or season changes, new events) in one consolidated pass ending in a single publish.
+The guide is kept current on a weekly cadence in summer (less often off-season, per the in-app "About this guide" note). This skill is that cycle: it catches what changed on the island (new restaurants, closings, relocations, price or season changes, new events) and refreshes every place's open/closed status, in one consolidated pass ending in a single publish.
 
-It orchestrates the focused skills rather than duplicating them: `add-place`, `add-event`, and `publish`.
+It orchestrates the focused skills rather than duplicating them: `add-place`, `add-event`, `refresh-status`, and `publish`.
 
 ## Project root
 
@@ -17,7 +17,7 @@ $HOME/Documents/mv-guide
 
 ## Order matters
 
-Do the content sweep and apply adds before publishing, so a week's changes ship together.
+Do the content sweep and apply adds **before** the status fetch, so any place added this week gets its open/closed check in the same run, and everything ships in one publish.
 
 ## Step 1 — Figure out the window
 
@@ -70,9 +70,13 @@ they carry that the guide does not is a hole worth filling — feed anything fou
 back through Step 3. MVacay (https://www.mvacay.com) is a third research source,
 but is never cited to guests.
 
-## Step 6 — Publish once
+## Step 6 — Refresh open/closed status
 
-Run `/whatsnext:publish`. The commit message should summarize the week: N added, N removed/edited. Verify in the preview that a couple of the changes render and there are no console errors.
+Run `/whatsnext:refresh-status` steps 2–4 (this also checks the places you just added). It rewrites `src/data/status.ts`, the map behind the app's red **Temporarily closed** pill, and reports what flipped: newly closed, reopened, and anything Google marks permanently closed. Treat a permanent closure as a candidate **removal** and put it through the same per-item yes/no as Step 3 before writing anything; never remove on Google's word alone.
+
+## Step 7 — Publish once
+
+Run `/whatsnext:publish`. The commit message should summarize the week: N added, N removed/edited, N temporarily closed. Verify in the preview that a couple of the changes render and there are no console errors.
 
 ## Off-season
 

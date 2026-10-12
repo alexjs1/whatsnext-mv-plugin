@@ -33,9 +33,9 @@ grep -rnE "\\b20(2[4-9]|3[0-9])\\b|new for 20|new 20" "$HOME/Documents/mv-guide/
 
 Spot-check `seasonal` fields on places whose season is time-sensitive (a place that changed hours, went year-round, or closed). This is judgment plus a quick source check, not a bulk edit. If a place has closed for good, remove it (and note it in the commit).
 
-## Step 4 — Ratings
+## Step 4 — Open/closed status
 
-Seasonal reopenings and closings are exactly what the seasonal pass is for; there is no ratings step (Google ratings were removed in Aug 2026 — see `DEVELOPMENT.md`).
+A season boundary is when the most places flip between open and closed, so run `/whatsnext:refresh-status` as part of the seasonal pass. Its "reopened" list is also a good cross-check on Step 3: a place Google says is open again should not still carry a closed-for-the-season note in its copy. There is no ratings step (Google ratings were removed in Aug 2026 — see `DEVELOPMENT.md`); open/closed status is a separate, later decision recorded in the same section.
 
 ## Step 5 — Publish
 

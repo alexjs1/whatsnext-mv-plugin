@@ -19,7 +19,8 @@ Repo `alexjs1/whats-next-mv`, branch `main` → auto-deploys to whatsnextmv.netl
 
 | Skill | What it does |
 |---|---|
-| `/whatsnext:weekly-refresh` | The weekly cycle: sweep for new/closed/changed places + events, publish |
+| `/whatsnext:weekly-refresh` | The weekly cycle: sweep for new/closed/changed places + events, refresh open/closed status, publish |
+| `/whatsnext:refresh-status` | Open/closed status refresh from Google (the red "Temporarily closed" pill; the mechanical part of the weekly cycle) |
 | `/whatsnext:add-place` | Add a place: verify, geocode, write the record, publish |
 | `/whatsnext:add-event` | Add an event to the calendar |
 | `/whatsnext:audit-descriptions` | Accuracy sweep of descriptions vs. real sources |
@@ -31,7 +32,7 @@ Repo `alexjs1/whats-next-mv`, branch `main` → auto-deploys to whatsnextmv.netl
 | `/whatsnext:customize-description` | Just a custom description (≤250 chars) |
 | `/whatsnext:publish` | Typecheck, export, verify, commit, push |
 
-The default weekly action is `/whatsnext:weekly-refresh`. If uncommitted work is sitting around, or it's been about a week, suggest it.
+The default weekly action is `/whatsnext:weekly-refresh`. If uncommitted work or a stale `status.ts` is sitting around, or it's been about a week, suggest it.
 
 ## Step 1 — Inspect state
 
@@ -48,7 +49,7 @@ Report the current content counts:
 cd "$HOME/Documents/mv-guide" && node --input-type=module -e "import('./src/data/places.ts').then(m=>{const P=m.PLACES;const byCat={};for(const p of P)byCat[p.category]=(byCat[p.category]||0)+1;console.log('places:',P.length);console.log(byCat);})"
 ```
 
-Note anything worth flagging: uncommitted changes, how long since the guide data last changed (`git log -1 --format=%cr -- src/data/places.ts`), whether it's near a season/year boundary (events dates rolling over).
+Note anything worth flagging: uncommitted changes, how long since the guide data last changed (`git log -1 --format=%cr -- src/data/places.ts`), how long since the open/closed check last ran (`git log -1 --format=%cr -- src/data/status.ts`), whether it's near a season/year boundary (events dates rolling over).
 
 ## Step 2 — Route
 
