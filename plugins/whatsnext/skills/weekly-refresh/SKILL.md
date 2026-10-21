@@ -15,6 +15,11 @@ It orchestrates the focused skills rather than duplicating them: `add-place`, `a
 $HOME/Documents/mv-guide
 ```
 
+## Two modes
+
+- **Interactive** (someone typed `/whatsnext:weekly-refresh`): the steps below, with the user approving each change in chat.
+- **Automated** (the Thursday 11:00 UTC routine, unattended): nobody is there to approve, so **nothing is written to the guide**. Do Steps 1, 2, 5, and 7 below for the research, skip Steps 3, 4, 6, and 8, and follow `review/README.md` in the app repo exactly: every finding becomes a proposal in the review queue, and the queue goes to alexjs1@gmail.com as a spreadsheet he returns through `/whatsnext:apply-review`. The open/closed refresh (Step 6) has already been done by the GitHub Action an hour earlier; read its result rather than re-running it (the routine has no Places key). In the cloud, the path is the cloned repo, not `$HOME/Documents/mv-guide`.
+
 ## Order matters
 
 Do the content sweep and apply adds **before** the status fetch, so any place added this week gets its open/closed check in the same run, and everything ships in one publish.

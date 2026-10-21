@@ -13,6 +13,11 @@ Content that was accurate last season goes stale: event dates roll over, places 
 $HOME/Documents/mv-guide
 ```
 
+## Two modes
+
+- **Interactive** (someone typed `/whatsnext:seasonal-refresh`): the steps below, editing and publishing as you go.
+- **Automated** (the routine on the 1st of every other month, unattended): nobody is there to approve, so **nothing is written to the guide**. Do the research in Steps 1–4 and 6, skip Step 5 (the weekly GitHub Action owns open/closed status) and Step 7, and follow `review/README.md` in the app repo exactly: each event date to roll, stale year reference, seasonal window, Steamship period, and VTA change becomes a proposal in the review queue (`"run": "seasonal"`), and the queue goes to alexjs1@gmail.com as a spreadsheet he returns through `/whatsnext:apply-review`. A new Steamship period or VTA route is too structural for one field; propose it with the `manual` op and spell out the exact record to add. In the cloud, the path is the cloned repo, not `$HOME/Documents/mv-guide`.
+
 ## Step 1 — Event dates
 
 Every entry in `src/data/events.ts` has a `when` (and often specific dates). For each, verify the **current** year's date against a real source (host site, town site, Vineyard Gazette / MV Times) and update it. Keep the list in chronological order after edits. Never guess a date; if one isn't published yet, use the month/pattern the source gives ("mid-June") rather than a fabricated day.
