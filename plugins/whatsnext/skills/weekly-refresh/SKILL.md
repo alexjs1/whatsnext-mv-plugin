@@ -74,7 +74,20 @@ but is never cited to guests.
 
 Run `/whatsnext:refresh-status` steps 2–4 (this also checks the places you just added). It rewrites `src/data/status.ts`, the map behind the app's red **Temporarily closed** pill, and reports what flipped: newly closed, reopened, and anything Google marks permanently closed. Treat a permanent closure as a candidate **removal** and put it through the same per-item yes/no as Step 3 before writing anything; never remove on Google's word alone.
 
-## Step 7 — Publish once
+## Step 7 — VTA service alerts (quick check)
+
+The full bus-schedule pass belongs to `/whatsnext:seasonal-refresh` (its Step 6),
+but two things can change any week, so skim <https://www.vineyardtransit.com/news>:
+
+- **The fare-free end date.** The Info tab states it outright in
+  `TRANSPORT.vta.fares`, so a changed or lapsed date makes the app wrong.
+- **New or suspended service.** Anything newly announced belongs in the data.
+
+If the news page shows a new timetable period has started, stop treating this as
+a quick check and run `/whatsnext:seasonal-refresh` instead. Use the built-in
+browser; the site 403s WebFetch.
+
+## Step 8 — Publish once
 
 Run `/whatsnext:publish`. The commit message should summarize the week: N added, N removed/edited, N temporarily closed. Verify in the preview that a couple of the changes render and there are no console errors.
 

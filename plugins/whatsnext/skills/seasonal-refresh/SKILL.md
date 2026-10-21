@@ -46,6 +46,45 @@ The SSA card on the Info tab lists its timetable by operating period (`schedules
 
 A season boundary is when the most places flip between open and closed, so run `/whatsnext:refresh-status` as part of the seasonal pass. Its "reopened" list is also a good cross-check on Step 3: a place Google says is open again should not still carry a closed-for-the-season note in its copy. There is no ratings step (Google ratings were removed in Aug 2026 — see `DEVELOPMENT.md`); open/closed status is a separate, later decision recorded in the same section.
 
-## Step 6 — Publish
+## Step 6 — The VTA bus schedule (do this every time)
 
-Run `/whatsnext:publish`. In the preview, open the Info → Events segment and confirm the rolled dates read correctly in order.
+The Info tab's bus data in `src/data/transport.ts` (`TRANSPORT.vta`) goes stale
+twice a year, because the VTA publishes two timetables: an **off-season** one
+(roughly early October to mid-April) and a **summer** one. The route times in
+our data are tied to whichever is in force, so a season boundary invalidates
+them. This was missed once already: in Oct 2026 the guide still carried summer
+frequencies, a fare note that had expired five months earlier, and 12 of the
+then-14 routes.
+
+Check all five of these against the VTA's own site, not a travel blog:
+
+1. **Which timetable is in force.** <https://www.vineyardtransit.com/bus-route-schedules>
+   lists the current period as a dated page (e.g. "October 4, 2026 - April 15,
+   2027"). Update `scheduleSeason` to match.
+2. **The route list.** That same page lists every route. Compare it to the
+   `routes` array and to the count stated in `summary`. Add new routes, and mark
+   a route the page shows as seasonal ("Done for the season") rather than
+   deleting it. Route 14 (Meshacket Loop) and Route 11 (Downtown Edgartown) were
+   both missing before Oct 2026.
+3. **Times for the headline routes.** Open the PDFs for Routes 1 and 13 (the
+   down-island corridors most visitors use) and confirm the first and last
+   departures and the headway. Each route links to a PDF via a redirect; the
+   browser resolves it, `curl` does not follow it:
+   ```
+   https://www.vineyardtransit.com/bus-route-schedules/files/rt-1-10426
+   ```
+   Spot-check one up-island route (4 or 5) as well. Where summer and off-season
+   differ, write both into `frequency` so the card reads correctly year-round.
+4. **Fare status.** <https://www.vineyardtransit.com/news> carries the fare-free
+   notice with its current end date. Fare-free has been extended repeatedly, so
+   never trust the date already in `fares` — re-read the notice. If fares ever
+   return, the VTA has said it will give at least six weeks' notice.
+5. **New services.** The news page is also where new service shows up (the
+   Boston hospital bus appeared there in Sept 2026). Anything new that serves
+   riders belongs in the data.
+
+`vineyardtransit.com` returns 403 to WebFetch; use the built-in browser.
+
+## Step 7 — Publish
+
+Run `/whatsnext:publish`. In the preview, open the Info → Events segment and confirm the rolled dates read correctly in order, then the Getting Around segment and confirm the bus cards show the right season's times.
