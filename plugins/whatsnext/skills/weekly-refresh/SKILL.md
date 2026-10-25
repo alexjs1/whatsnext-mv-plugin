@@ -18,7 +18,7 @@ $HOME/Documents/mv-guide
 ## Two modes
 
 - **Interactive** (someone typed `/whatsnext:weekly-refresh`): the steps below, with the user approving each change in chat.
-- **Automated** (the Thursday 11:00 UTC routine, unattended): nobody is there to approve, so **nothing is written to the guide**. Do Steps 1, 2, 5, and 7 below for the research, skip Steps 3, 4, 6, and 8, and follow `review/README.md` in the app repo exactly: every finding becomes a proposal in the review queue, and the queue goes to alexjs1@gmail.com as a spreadsheet he returns through `/whatsnext:apply-review`. The open/closed refresh (Step 6) has already been done by the GitHub Action an hour earlier; read its result rather than re-running it (the routine has no Places key). In the cloud, the path is the cloned repo, not `$HOME/Documents/mv-guide`.
+- **Automated** (the Thursday 11:00 UTC routine, unattended): nobody is there to approve, so **nothing is written to the guide**. Do Steps 1, 2, 5, 5b, and 7 below for the research, skip Steps 3, 4, 6, and 8, and follow `review/README.md` in the app repo exactly: every finding becomes a proposal in the review queue, and the queue goes to alexjs1@gmail.com as a spreadsheet he returns through `/whatsnext:apply-review`. The open/closed refresh (Step 6) has already been done by the GitHub Action an hour earlier; read its result rather than re-running it (the routine has no Places key). In the cloud, the path is the cloned repo, not `$HOME/Documents/mv-guide`.
 
 ## Order matters
 
@@ -37,7 +37,7 @@ Use that date as "since"; if it's been longer, widen the window accordingly.
 
 ## Step 2 — Sweep local sources for changes
 
-Search the Vineyard's own press and listings for anything that happened since the window date. Good sources: the Vineyard Gazette and MV Times (news + calendars), thisweekonmv.com, mvacay.com, gomarthasvineyard.com, and the businesses' own sites. Look for:
+Search the Vineyard's own press and listings for anything that happened since the window date. Good sources: everything in `netlify/functions/trusted-sources.json` (the Vineyard Gazette and MV Times news and calendars, MV Online, gomarthasvineyard.com, mvacay.com, and the rest), thisweekonmv.com, and the businesses' own sites. Look for:
 
 - **New openings** — restaurants, shops, markets, lodging that opened or are about to.
 - **Closings / relocations** — places that closed, moved, or rebranded (a "former X space" now something else).
@@ -74,6 +74,39 @@ Times' Things to Do (https://www.mvtimes.com/things-to-do). A business or event
 they carry that the guide does not is a hole worth filling — feed anything found
 back through Step 3. MVacay (https://www.mvacay.com) is a third research source,
 but is never cited to guests.
+
+## Step 5b — Discover new sources for the concierge
+
+The AI concierge searches the web live, but only the sites in
+`netlify/functions/trusted-sources.json` (plus the websites of the guide places
+it pulls up for a question). That list is what lets it beat a general AI: it
+reads the island's own papers, calendars, town and transit sites instead of the
+open web. Keep it growing.
+
+While doing Steps 2 and 5, note every site that carried useful, current Martha's
+Vineyard information and is **not** already in the list. Then run one or two
+deliberate searches for new ones (for example "Martha's Vineyard events
+calendar", "Martha's Vineyard restaurant openings", "Edgartown town notices",
+"Martha's Vineyard off-season hours"). A site qualifies when it is:
+
+- **About the island**, mostly or wholly (not a national travel site with one page on it).
+- **Current**: updated within the last three months.
+- **A primary or well-kept source**: a paper, a calendar, a town or county office, a transit operator, a conservation group, a venue, a festival, or a long-running local guide.
+- **Not** a social network, a link hub, a search engine, or a content farm (thin, AI-written, or copied pages).
+
+Also drop any listed site that has died or gone stale for six months.
+
+Each addition is one entry: `domain` (no `www.`), `name` (how a guest would hear
+it credited, e.g. "the MV Times"), `covers`, and `cite` (`false` for research-only
+sources such as MVacay, which the concierge may read but never names). Set
+`updated` to today. OpenAI allows 100 search domains per question and each
+question also adds its places' own websites, so keep the list under about 60;
+past that, replace the weakest source rather than adding. Add each new source to
+`WNMV_Links.md` too.
+
+Interactive: put the proposed additions and removals through Step 3's yes/no
+with the rest. Automated: they become review-queue proposals like any other
+finding.
 
 ## Step 6 — Refresh open/closed status
 
